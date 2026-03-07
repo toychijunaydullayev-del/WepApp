@@ -1,54 +1,290 @@
 <!DOCTYPE html>
-<html>
+<html lang="uz">
 <head>
-    <meta charset="utf-8">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Test Platformasi</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body { font-family: sans-serif; background-color: #f4f7f9; margin: 0; padding: 15px; }
-        .header { text-align: center; color: #6a1b9a; font-size: 24px; font-weight: bold; margin-bottom: 20px; }
-        .progress-container { width: 100%; background: #ddd; border-radius: 10px; height: 10px; margin-bottom: 20px; }
-        .progress-bar { width: 30%; height: 100%; background: #333; border-radius: 10px; }
-        .question-card { background: white; border-radius: 15px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        .option { display: block; padding: 15px; border: 1px solid #ddd; border-radius: 10px; margin-top: 10px; cursor: pointer; }
-        .option:hover { background: #f0f0f0; }
-        .matrix { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin-top: 20px; }
-        .matrix-btn { background: #e0e0e0; border: none; padding: 10px; border-radius: 5px; font-weight: bold; }
-        .matrix-btn.active { background: #4caf50; color: white; }
+        :root {
+            --tg-theme-bg-color: #f4f7f9;
+            --primary-color: #6a1b9a;
+            --correct-color: #4caf50;
+            --incorrect-color: #f44336;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--tg-theme-bg-color);
+            margin: 0;
+            padding: 15px;
+            color: #333;
+            user-select: none;
+        }
+
+        .header-box {
+            background: white;
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            margin-bottom: 15px;
+        }
+
+        #timer {
+            font-size: 28px;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .sarf-vaqt {
+            font-size: 12px;
+            color: #888;
+            text-transform: uppercase;
+        }
+
+        .progress-container {
+            width: 100%;
+            background: #e0e0e0;
+            border-radius: 10px;
+            height: 8px;
+            margin: 15px 0;
+            overflow: hidden;
+        }
+
+        #progressBar {
+            width: 0%;
+            height: 100%;
+            background: #333;
+            transition: width 0.3s;
+        }
+
+        .question-card {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            min-height: 200px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+
+        #qTitle {
+            font-size: 14px;
+            color: #888;
+            margin-bottom: 10px;
+        }
+
+        #qText {
+            font-size: 18px;
+            font-weight: 600;
+            line-height: 1.4;
+            margin-bottom: 20px;
+        }
+
+        .option {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border: 2px solid #f0f0f0;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: 0.2s;
+            font-weight: 500;
+        }
+
+        .option:active {
+            background-color: #f9f9f9;
+            transform: scale(0.98);
+        }
+
+        .option.selected {
+            border-color: var(--primary-color);
+            background-color: #f3e5f5;
+        }
+
+        .matrix-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 8px;
+            margin-top: 25px;
+            padding-bottom: 80px;
+        }
+
+        .matrix-item {
+            aspect-ratio: 1;
+            border: none;
+            border-radius: 8px;
+            background: #e0e6ed;
+            font-weight: bold;
+            color: #555;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+
+        .matrix-item.active {
+            background: #5c6bc0;
+            color: white;
+        }
+
+        .matrix-item.done {
+            background: #aab4be;
+            color: white;
+        }
+
+        .footer-btns {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            padding: 15px;
+            display: flex;
+            gap: 10px;
+            box-shadow: 0 -5px 15px rgba(0,0,0,0.05);
+        }
+
+        .btn {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .btn-finish {
+            background-color: var(--primary-color);
+            color: white;
+        }
     </style>
 </head>
 <body>
-    <div class="header" id="timer">10:00</div>
-    <div class="progress-container"><div class="progress-bar" id="progressBar"></div></div>
-    
-    <div class="question-card" id="qCard">
-        <h3 id="qTitle">Savol 1</h3>
-        <p id="qText">Yuklanmoqda...</p>
-        <div class="option" onclick="selectOption('A')">A) Variant 1</div>
-        <div class="option" onclick="selectOption('B')">B) Variant 2</div>
-        <div class="option" onclick="selectOption('C')">C) Variant 3</div>
-        <div class="option" onclick="selectOption('D')">D) Variant 4</div>
+
+    <div class="header-box">
+        <div id="timer">10:00</div>
+        <div class="sarf-vaqt">Sarflandigan vaqt</div>
+        <div class="progress-container">
+            <div id="progressBar"></div>
+        </div>
     </div>
 
-    <div class="matrix" id="matrixContainer"></div>
+    <div class="question-card">
+        <div id="qTitle">Savol 1</div>
+        <div id="qText">Savol yuklanmoqda...</div>
+        
+        <div id="optionsContainer">
+            <div class="option" onclick="selectOption('A')">A) Variant A</div>
+            <div class="option" onclick="selectOption('B')">B) Variant B</div>
+            <div class="option" onclick="selectOption('C')">C) Variant C</div>
+            <div class="option" onclick="selectOption('D')">D) Variant D</div>
+        </div>
+    </div>
 
-    <button onclick="finishTest()" style="width:100%; margin-top:20px; background:#6a1b9a; color:white; padding:15px; border:none; border-radius:10px;">✅ Yakunlash</button>
+    <div class="matrix-grid" id="matrix">
+        <!-- Matritsa raqamlari JS orqali qo'shiladi -->
+    </div>
+
+    <div class="footer-btns">
+        <button class="btn btn-finish" onclick="finishTest()">🏁 Testni yakunlash</button>
+    </div>
 
     <script>
         let tg = window.Telegram.WebApp;
-        tg.expand(); // WebAppni to'liq ekranga yoyish
+        tg.expand();
 
-        // Test natijalarini botga yuborish
+        let currentIdx = 0;
+        let totalQuestions = 17;
+        let answers = {};
+        let timeLeft = 600; // 10 minut
+
+        // Savol ma'lumotlari (namuna)
+        const mockQuestions = [
+            { text: "Moslikni toping. 1. Tarbiyaviy faoliyatni tashkil etish...", a: "1c2a", b: "1a2c", c: "1a2b", d: "1c2b" },
+            // Boshqa savollarni ham shu yerga qo'shish mumkin
+        ];
+
+        function initMatrix() {
+            const matrixContainer = document.getElementById('matrix');
+            matrixContainer.innerHTML = '';
+            for (let i = 0; i < totalQuestions; i++) {
+                const btn = document.createElement('button');
+                btn.className = 'matrix-item';
+                if (i === currentIdx) btn.classList.add('active');
+                if (answers[i]) btn.classList.add('done');
+                btn.innerText = i + 1;
+                btn.onclick = () => jumpTo(i);
+                matrixContainer.appendChild(btn);
+            }
+        }
+
+        function updateUI() {
+            document.getElementById('qTitle').innerText = `Savol ${currentIdx + 1}`;
+            const q = mockQuestions[0]; // Hozircha namuna uchun birinchi savol
+            document.getElementById('qText').innerText = q.text;
+            
+            // Progress bar
+            const progress = ((currentIdx + 1) / totalQuestions) * 100;
+            document.getElementById('progressBar').style.width = progress + "%";
+
+            // Variantlarni tozalash va tanlanganni belgilash
+            const opts = document.querySelectorAll('.option');
+            opts.forEach(opt => {
+                opt.classList.remove('selected');
+                if(answers[currentIdx] === opt.innerText[0]) opt.classList.add('selected');
+            });
+
+            initMatrix();
+        }
+
+        function selectOption(choice) {
+            answers[currentIdx] = choice;
+            updateUI();
+            // Avtomatik keyingisiga o'tish (ixtiyoriy)
+            if(currentIdx < totalQuestions - 1) {
+                setTimeout(() => { currentIdx++; updateUI(); }, 300);
+            }
+        }
+
+        function jumpTo(idx) {
+            currentIdx = idx;
+            updateUI();
+        }
+
         function finishTest() {
-            let result = { score: 15, total: 20, time: "09:54" }; // Test yakunidagi hisob
-            tg.sendData(JSON.stringify(result)); // Botga ma'lumotni yuboradi va oynani yopadi
+            if (confirm("Testni yakunlashni xohlaysizmi?")) {
+                let score = 0;
+                // Natijani hisoblash (Namuna: hamma javob A bo'lsa to'g'ri deb hisoblaymiz)
+                Object.keys(answers).forEach(key => {
+                    if(answers[key] === 'A') score++;
+                });
+
+                const resultData = {
+                    score: score,
+                    total: totalQuestions,
+                    answers: answers
+                };
+
+                tg.sendData(JSON.stringify(resultData));
+            }
         }
 
-        // Matritsani yaratish
-        let matrix = document.getElementById('matrixContainer');
-        for(let i=1; i<=17; i++) {
-            matrix.innerHTML += `<button class="matrix-btn">${i}</button>`;
-        }
+        // Taymer funksiyasi
+        setInterval(() => {
+            if (timeLeft > 0) {
+                timeLeft--;
+                let min = Math.floor(timeLeft / 60);
+                let sec = timeLeft % 60;
+                document.getElementById('timer').innerText = 
+                    `${min}:${sec < 10 ? '0' + sec : sec}`;
+            } else {
+                finishTest();
+            }
+        }, 1000);
+
+        updateUI();
     </script>
 </body>
 </html>
