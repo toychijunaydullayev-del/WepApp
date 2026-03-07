@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body { font-family: sans-serif; background-color: #f4f7f9; margin: 0; padding: 15px; }
+        .header { text-align: center; color: #6a1b9a; font-size: 24px; font-weight: bold; margin-bottom: 20px; }
+        .progress-container { width: 100%; background: #ddd; border-radius: 10px; height: 10px; margin-bottom: 20px; }
+        .progress-bar { width: 30%; height: 100%; background: #333; border-radius: 10px; }
+        .question-card { background: white; border-radius: 15px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .option { display: block; padding: 15px; border: 1px solid #ddd; border-radius: 10px; margin-top: 10px; cursor: pointer; }
+        .option:hover { background: #f0f0f0; }
+        .matrix { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin-top: 20px; }
+        .matrix-btn { background: #e0e0e0; border: none; padding: 10px; border-radius: 5px; font-weight: bold; }
+        .matrix-btn.active { background: #4caf50; color: white; }
+    </style>
+</head>
+<body>
+    <div class="header" id="timer">10:00</div>
+    <div class="progress-container"><div class="progress-bar" id="progressBar"></div></div>
+    
+    <div class="question-card" id="qCard">
+        <h3 id="qTitle">Savol 1</h3>
+        <p id="qText">Yuklanmoqda...</p>
+        <div class="option" onclick="selectOption('A')">A) Variant 1</div>
+        <div class="option" onclick="selectOption('B')">B) Variant 2</div>
+        <div class="option" onclick="selectOption('C')">C) Variant 3</div>
+        <div class="option" onclick="selectOption('D')">D) Variant 4</div>
+    </div>
+
+    <div class="matrix" id="matrixContainer"></div>
+
+    <button onclick="finishTest()" style="width:100%; margin-top:20px; background:#6a1b9a; color:white; padding:15px; border:none; border-radius:10px;">✅ Yakunlash</button>
+
+    <script>
+        let tg = window.Telegram.WebApp;
+        tg.expand(); // WebAppni to'liq ekranga yoyish
+
+        // Test natijalarini botga yuborish
+        function finishTest() {
+            let result = { score: 15, total: 20, time: "09:54" }; // Test yakunidagi hisob
+            tg.sendData(JSON.stringify(result)); // Botga ma'lumotni yuboradi va oynani yopadi
+        }
+
+        // Matritsani yaratish
+        let matrix = document.getElementById('matrixContainer');
+        for(let i=1; i<=17; i++) {
+            matrix.innerHTML += `<button class="matrix-btn">${i}</button>`;
+        }
+    </script>
+</body>
+</html>
