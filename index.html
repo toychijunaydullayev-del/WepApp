@@ -3,178 +3,112 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>Rash Tekshiruv Platformasi</title>
+    <title>Rash Tekshiruv</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
-            --bg-color: #f0f4f8;
-            --primary-color: #0088cc;
-            --success-color: #4caf50;
-            --matrix-unselected: #bbdefb; /* Och ko'k */
-            --matrix-selected: #4caf50;   /* Yashil */
-            --text-color: #333;
+            --bg-color: #f8fafc;
+            --q-bg: #e8f5e9; /* Och yashil fon */
+            --primary: #0088cc;
+            --blue: #3b82f6;
+            --yellow: #f59e0b;
+            --red: #ef4444;
+            --green: #22c55e;
         }
 
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            background-color: var(--bg-color);
-            margin: 0;
-            padding: 0;
-            overflow-x: hidden;
-            color: var(--text-color);
-        }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg-color); margin: 0; padding: 0; user-select: none; }
 
-        /* --- XIRA FON REKLAMASI --- */
         .watermark {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) rotate(-30deg);
-            font-size: 40px;
-            color: rgba(0, 0, 0, 0.05); /* Juda xira */
-            white-space: nowrap;
-            z-index: -1;
-            pointer-events: none;
-            font-weight: bold;
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-30deg);
+            font-size: 30px; color: rgba(0,0,0,0.03); z-index: -1; font-weight: bold; white-space: nowrap;
         }
 
-        /* --- YUQORI PANEL (HEADER) --- */
+        /* --- HEADER --- */
         .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: white;
-            padding: 10px 15px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            position: sticky;
-            top: 0;
-            z-index: 100;
+            background: white; padding: 15px; display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05); sticky: top; z-index: 10;
         }
-
-        .user-info { display: flex; flex-direction: column; }
-        #userName { font-weight: bold; font-size: 14px; color: var(--primary-color); }
-        .test-label { font-size: 11px; color: #888; }
-
-        #timer { font-size: 20px; font-weight: bold; font-family: monospace; }
-
-        .btn-finish {
-            background-color: var(--success-color);
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
+        #userName { font-size: 20px; font-weight: 800; color: var(--primary); }
+        
+        .timer-box {
+            padding: 5px 15px; border-radius: 20px; color: white; font-weight: bold; font-family: monospace;
+            transition: 0.5s; font-size: 18px;
         }
+        .t-blue { background: var(--blue); }
+        .t-yellow { background: var(--yellow); }
+        .t-red { background: var(--red); }
 
-        /* --- MATRITSA (SAVOLLAR RO'YXATI) --- */
-        .matrix-container {
-            padding: 10px;
-            background: #fff;
-            border-bottom: 1px solid #ddd;
-        }
+        .btn-finish { background: var(--green); color: white; border: none; padding: 10px 20px; border-radius: 10px; font-weight: bold; cursor: pointer; }
 
-        .matrix-grid {
-            display: flex;
-            overflow-x: auto;
-            gap: 8px;
-            padding: 5px 0;
-        }
-
+        /* --- MATRIX (5 qator) --- */
+        .matrix-container { padding: 10px; background: white; border-bottom: 1px solid #e2e8f0; }
+        .matrix-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; max-height: 150px; overflow-y: auto; padding: 5px; }
         .matrix-item {
-            min-width: 35px;
-            height: 35px;
-            background: var(--matrix-unselected);
-            border: none;
-            border-radius: 50%;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: 0.3s;
+            aspect-ratio: 1; border-radius: 8px; border: none; background: #dbeafe; /* och ko'k */
+            font-weight: bold; color: #1e40af; cursor: pointer; display: flex; align-items: center; justify-content: center;
         }
+        .matrix-item.active { outline: 3px solid var(--primary); }
+        .matrix-item.done { background: var(--green) !important; color: white; }
+        .matrix-item.wrong { background: var(--red) !important; color: white; }
 
-        .matrix-item.active { border: 2px solid var(--primary-color); transform: scale(1.1); }
-        .matrix-item.done { background: var(--matrix-selected); color: white; }
-
-        /* --- TEST MAYDONI --- */
-        .container { padding: 20px; }
+        /* --- QUESTION CARD --- */
+        .container { padding: 15px; }
         .question-card {
-            background: white;
-            border-radius: 15px;
-            padding: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            min-height: 250px;
+            background: var(--q-bg); padding: 20px; border-radius: 15px; border: 1px solid #c8e6c9;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02); min-height: 200px;
         }
-
-        #qText { font-size: 18px; font-weight: 600; margin-bottom: 20px; }
+        #qText { font-size: 18px; font-weight: 600; line-height: 1.5; margin-bottom: 20px; }
 
         .option {
-            padding: 15px;
-            border: 2px solid #eee;
-            border-radius: 10px;
-            margin-bottom: 10px;
-            cursor: pointer;
-            transition: 0.2s;
+            background: rgba(255,255,255,0.7); padding: 15px; border-radius: 10px; margin-bottom: 10px;
+            border: 2px solid transparent; cursor: pointer; transition: 0.2s; font-weight: 500;
         }
+        .option.selected { border-color: var(--primary); background: white; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
 
-        .option.selected { border-color: var(--primary-color); background: #e3f2fd; }
+        /* --- NAV --- */
+        .nav-btns { display: flex; gap: 10px; margin-top: 15px; }
+        .btn-nav { flex: 1; padding: 15px; border-radius: 12px; border: 1px solid var(--primary); background: white; color: var(--primary); font-weight: bold; }
 
-        /* --- NAVIGATSIYA TUGMALARI --- */
-        .nav-btns {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 20px;
-            gap: 15px;
+        /* --- RESULT OVERLAY --- */
+        #resultPage {
+            display: none; position: fixed; inset: 0; background: white; z-index: 1000; padding: 30px;
+            flex-direction: column; align-items: center; justify-content: center; text-align: center;
         }
-
-        .btn-nav {
-            flex: 1;
-            padding: 12px;
-            border: none;
-            border-radius: 10px;
-            background: white;
-            color: var(--primary-color);
-            border: 1px solid var(--primary-color);
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        .btn-nav:disabled { opacity: 0.3; }
-
+        .res-icon { font-size: 80px; margin-bottom: 20px; }
     </style>
 </head>
 <body>
-
-    <!-- Xira fon -->
-    <div class="watermark">RASH_TEKSHIRUV KANALI</div>
-    <div class="watermark" style="top: 20%;">RASH_TEKSHIRUV KANALI</div>
-    <div class="watermark" style="top: 80%;">RASH_TEKSHIRUV KANALI</div>
-
+    <div class="watermark">RASH_TEKSHIRUV</div>
     <div class="header">
-        <div class="user-info">
-            <span id="userName">Foydalanuvchi</span>
-            <span class="test-label">Savol matritsasi</span>
-        </div>
-        <div id="timer">00:00:00</div>
-        <button class="btn-finish" onclick="finishTest()">🏁 Yakunlash</button>
+        <div id="userName">Yuklanmoqda...</div>
+        <div id="timer" class="timer-box t-blue">00:00</div>
+        <button class="btn-finish" onclick="finishConfirm()">Yakunlash</button>
     </div>
 
     <div class="matrix-container">
         <div class="matrix-grid" id="matrix"></div>
     </div>
 
-    <div class="container">
+    <div class="container" id="quizPage">
         <div class="question-card">
-            <div id="qText">Savol yuklanmoqda...</div>
-            <div id="optionsContainer"></div>
+            <div id="qText">Yuklanmoqda...</div>
+            <div id="options"></div>
         </div>
-
         <div class="nav-btns">
-            <button id="prevBtn" class="btn-nav" onclick="prevQ()">⬅️ Oldingi</button>
-            <button id="nextBtn" class="btn-nav" onclick="nextQ()">Keyingi ➡️</button>
+            <button class="btn-nav" onclick="prevQ()">⬅️ Oldingi</button>
+            <button class="btn-nav" onclick="nextQ()">Keyingi ➡️</button>
         </div>
+    </div>
+
+    <div id="resultPage">
+        <div class="res-icon">🏆</div>
+        <h2 id="resTitle">Ajoyib natija!</h2>
+        <p id="resDetails" style="font-size: 20px;"></p>
+        <p id="resMsg" style="color: #666; margin: 20px 0;"></p>
+        <div style="background: #f1f5f9; padding: 15px; border-radius: 10px; font-size: 14px;">
+            🤖 Xatolarni tahlil qilish va qaysi mavzularda oqsashni bilish uchun <b>AI yordamchisiga</b> murojaat qiling!
+        </div>
+        <button class="btn-finish" style="margin-top:20px; width:100%" onclick="closeApp()">Botga qaytish</button>
     </div>
 
     <script>
@@ -182,107 +116,103 @@
         tg.expand();
 
         let currentIdx = 0;
-        let questions = []; 
+        let questions = [];
         let answers = {};
-        let timeLeft = 3600; // 1 soat default
+        let isFinished = false;
+        let timerSeconds = 0;
 
-        // Foydalanuvchi nomini o'rnatish
-        document.getElementById('userName').innerText = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.first_name : "O'quvchi";
+        document.getElementById('userName').innerText = tg.initDataUnsafe.user?.first_name || "O'quvchi";
 
-        // URL dan ma'lumotlarni dekodlash
         const urlParams = new URLSearchParams(window.location.search);
-        const encodedData = urlParams.get('data');
+        const fileName = urlParams.get('file');
 
-        if (encodedData) {
-            try {
-                questions = JSON.parse(atob(encodedData));
-                timeLeft = questions.length * 60; // Har bir savolga 1 minutdan
-            } catch (e) {
-                document.getElementById('qText').innerText = "Xato: Savollarni yuklab bo'lmadi.";
-            }
+        if(fileName) {
+            fetch(fileName).then(r => r.json()).then(data => {
+                questions = data;
+                timerSeconds = questions.length * 60;
+                startTimer();
+                updateUI();
+            }).catch(() => document.getElementById('qText').innerText = "Testni yuklashda xato!");
         }
 
         function updateUI() {
-            if (questions.length === 0) return;
-
+            if(questions.length === 0) return;
             const q = questions[currentIdx];
-            document.getElementById('qText').innerText = `${currentIdx + 1}. ${q.t}`;
+            document.getElementById('qText').innerText = q.t;
             
-            const container = document.getElementById('optionsContainer');
-            container.innerHTML = '';
-            ['a','b','c','d'].forEach(key => {
-                const opt = document.createElement('div');
-                opt.className = `option ${answers[currentIdx] === key.toUpperCase() ? 'selected' : ''}`;
-                opt.innerText = `${key.toUpperCase()}) ${q[key]}`;
-                opt.onclick = () => selectOption(key.toUpperCase());
-                container.appendChild(opt);
+            const optCont = document.getElementById('options');
+            optCont.innerHTML = '';
+            ['a','b','c','d'].forEach(k => {
+                const div = document.createElement('div');
+                div.className = `option ${answers[currentIdx] === k.toUpperCase() ? 'selected' : ''}`;
+                div.innerText = `${k.toUpperCase()}) ${q[k]}`;
+                div.onclick = () => { if(!isFinished) { answers[currentIdx] = k.toUpperCase(); updateUI(); } };
+                optCont.appendChild(div);
             });
-
-            document.getElementById('prevBtn').disabled = (currentIdx === 0);
-            document.getElementById('nextBtn').innerText = (currentIdx === questions.length - 1) ? "Yakunlash 🏁" : "Keyingi ➡️";
-            
-            initMatrix();
+            renderMatrix();
         }
 
-        function initMatrix() {
-            const matrixContainer = document.getElementById('matrix');
-            matrixContainer.innerHTML = '';
+        function renderMatrix() {
+            const cont = document.getElementById('matrix');
+            cont.innerHTML = '';
             questions.forEach((_, i) => {
-                const btn = document.createElement('button');
-                btn.className = `matrix-item ${i === currentIdx ? 'active' : ''} ${answers[i] ? 'done' : ''}`;
+                const btn = document.createElement('div');
+                btn.className = `matrix-item ${i === currentIdx ? 'active' : ''}`;
+                if(isFinished) {
+                    const isCorrect = answers[i] === questions[i].ans;
+                    btn.classList.add(isCorrect ? 'done' : 'wrong');
+                } else if(answers[i]) {
+                    btn.classList.add('done');
+                }
                 btn.innerText = i + 1;
-                btn.onclick = () => { currentIdx = i; updateUI(); };
-                matrixContainer.appendChild(btn);
+                btn.onclick = () => {
+                    if(isFinished) {
+                        alert(`Savol #${i+1} haqida e'tiroz bildirish: [Foydalanuvchi xabari botga yuboriladi]`);
+                        // Bu yerda tg.sendData orqali botga e'tiroz yuborish mumkin
+                    }
+                    currentIdx = i; updateUI();
+                };
+                cont.appendChild(btn);
             });
         }
 
-        function selectOption(choice) {
-            answers[currentIdx] = choice;
+        function nextQ() { if(currentIdx < questions.length-1) { currentIdx++; updateUI(); } }
+        function prevQ() { if(currentIdx > 0) { currentIdx--; updateUI(); } }
+
+        function startTimer() {
+            const tDiv = document.getElementById('timer');
+            const total = timerSeconds;
+            const interval = setInterval(() => {
+                if(timerSeconds <= 0 || isFinished) { clearInterval(interval); if(!isFinished) finishTest(); return; }
+                timerSeconds--;
+                const h = Math.floor(timerSeconds/3600);
+                const m = Math.floor((timerSeconds%3600)/60);
+                const s = timerSeconds%60;
+                tDiv.innerText = `${h}:${m < 10 ? '0'+m : m}:${s < 10 ? '0'+s : s}`;
+                
+                const p = (timerSeconds/total) * 100;
+                tDiv.className = 'timer-box ' + (p > 50 ? 't-blue' : (p > 20 ? 't-yellow' : 't-red'));
+            }, 1000);
+        }
+
+        function finishConfirm() { if(confirm("Testni yakunlashni tasdiqlaysizmi?")) finishTest(); }
+
+        function finishTest() {
+            isFinished = true;
+            let score = 0;
+            questions.forEach((q, i) => { if(answers[i] === q.ans) score++; });
+            const percent = Math.round((score/questions.length)*100);
+            
+            document.getElementById('quizPage').style.display = 'none';
+            document.getElementById('resultPage').style.display = 'flex';
+            document.getElementById('resDetails').innerText = `${score} / ${questions.length} (${percent}%)`;
+            document.getElementById('resMsg').innerText = percent > 70 ? "Barakalla! Siz juda yaxshi natija ko'rsatdingiz!" : "Yana biroz harakat qilsangiz, albatta uddalaysiz!";
+            
+            tg.sendData(JSON.stringify({score, total: questions.length, percent}));
             updateUI();
         }
 
-        function nextQ() {
-            if (currentIdx < questions.length - 1) {
-                currentIdx++;
-                updateUI();
-            } else {
-                finishTest();
-            }
-        }
-
-        function prevQ() {
-            if (currentIdx > 0) {
-                currentIdx--;
-                updateUI();
-            }
-        }
-
-        function finishTest() {
-            if (confirm("Testni yakunlashni xohlaysizmi?")) {
-                let score = 0;
-                questions.forEach((q, i) => {
-                    if (answers[i] === q.ans) score++;
-                });
-                const result = { score: score, total: questions.length, time: document.getElementById('timer').innerText };
-                tg.sendData(JSON.stringify(result));
-            }
-        }
-
-        // TAYMER (HH:MM:SS formatda)
-        setInterval(() => {
-            if (timeLeft > 0) {
-                timeLeft--;
-                let h = Math.floor(timeLeft / 3600);
-                let m = Math.floor((timeLeft % 3600) / 60);
-                let s = timeLeft % 60;
-                document.getElementById('timer').innerText = 
-                    `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
-            } else {
-                finishTest();
-            }
-        }, 1000);
-
-        updateUI();
+        function closeApp() { tg.close(); }
     </script>
 </body>
 </html>
