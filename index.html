@@ -8,55 +8,148 @@
     <style>
         :root {
             --bg: #f8fafc;
-            --q-bg: #e8f5e9; /* Savol uchun och yashil fon */
+            /* Savol foni: Och yashil */
+            --q-bg: #DCFCE7; 
+            /* Savol matni: To'q qora/yashil */
+            --q-text: #052e16; 
             --primary: #0088cc;
             --success: #22c55e;
             --error: #ef4444;
             --blue: #3b82f6;
             --yellow: #f59e0b;
+            --red: #ef4444;
         }
 
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); margin: 0; padding: 0; user-select: none; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+            background: var(--bg); 
+            margin: 0; 
+            padding: 0; 
+            user-select: none; 
+            -webkit-tap-highlight-color: transparent;
+        }
         
-        .watermark { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-30deg); font-size: 35px; color: rgba(0,0,0,0.03); z-index: -1; font-weight: 900; white-space: nowrap; pointer-events: none; }
+        .watermark { 
+            position: fixed; top: 50%; left: 50%; 
+            transform: translate(-50%, -50%) rotate(-30deg); 
+            font-size: 35px; color: rgba(0,0,0,0.03); 
+            z-index: -1; font-weight: 900; 
+            white-space: nowrap; pointer-events: none; 
+        }
 
-        .header { background: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 100; }
+        .header { 
+            background: white; padding: 12px 15px; 
+            display: flex; justify-content: space-between; 
+            align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05); 
+            position: sticky; top: 0; z-index: 100; 
+        }
         
         .user-block { display: flex; flex-direction: column; flex: 1; }
-        #userName { font-size: 26px; font-weight: 900; color: #1a1a1a; margin: 0; }
-        .sub-text { font-size: 12px; color: #888; }
+        #userName { font-size: 18px; font-weight: 800; color: #1a1a1a; margin: 0; }
+        .sub-text { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 0.5px; }
         
-        .timer-container { flex: 1; display: flex; justify-content: center; }
-        .timer-box { padding: 6px 15px; border-radius: 12px; color: white; font-weight: bold; font-size: 20px; font-family: monospace; transition: 0.5s; }
+        .timer-box { 
+            padding: 6px 12px; border-radius: 10px; 
+            color: white; font-weight: bold; 
+            font-size: 18px; font-family: 'Courier New', monospace; 
+        }
         .t-blue { background: var(--blue); }
         .t-yellow { background: var(--yellow); }
         .t-red { background: var(--red); }
 
-        .btn-finish-top { background: var(--success); color: white; border: none; padding: 10px 15px; border-radius: 10px; font-weight: bold; cursor: pointer; }
+        .btn-finish-top { 
+            background: var(--error); color: white; border: none; 
+            padding: 8px 12px; border-radius: 10px; 
+            font-weight: bold; cursor: pointer; font-size: 13px;
+        }
 
-        .matrix-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; padding: 15px; background: white; border-bottom: 1px solid #eee; max-height: 200px; overflow-y: auto; }
-        .matrix-item { aspect-ratio: 1; border-radius: 10px; border: none; background: #e0f2fe; color: #0369a1; font-weight: bold; font-size: 15px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-        .matrix-item.active { box-shadow: 0 0 0 3px var(--primary); }
+        .matrix-grid { 
+            display: flex; gap: 8px; padding: 12px; 
+            background: white; border-bottom: 1px solid #eee; 
+            overflow-x: auto; white-space: nowrap;
+            -webkit-overflow-scrolling: touch;
+        }
+        .matrix-item { 
+            min-width: 35px; height: 35px; border-radius: 8px; 
+            background: #f1f5f9; color: #475569; 
+            font-weight: bold; font-size: 14px; 
+            display: flex; align-items: center; justify-content: center; 
+            cursor: pointer; flex-shrink: 0;
+        }
+        .matrix-item.active { border: 2px solid var(--primary); background: #e0f2fe; color: var(--primary); }
         .matrix-item.done { background: var(--success) !important; color: white; }
         .matrix-item.wrong { background: var(--error) !important; color: white; }
 
         .container { padding: 15px; padding-bottom: 100px; }
-        .question-card { background: var(--q-bg); padding: 25px; border-radius: 20px; border: 1px solid #c8e6c9; min-height: 180px; }
-        #qText { font-size: 19px; font-weight: 600; line-height: 1.5; color: #1b5e20; }
         
-        .option { background: rgba(255,255,255,0.7); padding: 16px; border-radius: 14px; margin-top: 12px; border: 2px solid transparent; transition: 0.2s; font-size: 17px; }
-        .option.selected { border-color: var(--primary); background: white; font-weight: bold; }
+        /* SAVOL KARTASI */
+        .question-card { 
+            background: var(--q-bg); 
+            padding: 20px; 
+            border-radius: 18px; 
+            border: 1px solid #bdf0cc; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+        }
+        #qText { 
+            font-size: 18px; 
+            font-weight: 700; 
+            line-height: 1.4; 
+            color: var(--q-text); /* Qora/To'q yashil matn */
+            margin-bottom: 20px;
+        }
+        
+        /* VARIANTLAR */
+        .option { 
+            background: white; 
+            padding: 15px; 
+            border-radius: 12px; 
+            margin-top: 10px; 
+            border: 2px solid transparent; 
+            transition: all 0.2s ease; 
+            font-size: 16px; 
+            color: #334155;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+        .option.selected { 
+            border-color: var(--primary); 
+            background: #f0f9ff; 
+            font-weight: 600; 
+            color: var(--primary);
+        }
 
-        .nav-bar { display: flex; gap: 15px; padding: 20px; position: fixed; bottom: 0; left: 0; right: 0; background: white; box-shadow: 0 -5px 15px rgba(0,0,0,0.05); }
-        .btn-nav { flex: 1; padding: 16px; border-radius: 14px; border: 1px solid #ddd; font-weight: bold; font-size: 16px; cursor: pointer; background: #f9fafb; }
+        .nav-bar { 
+            display: flex; gap: 12px; padding: 15px; 
+            position: fixed; bottom: 0; left: 0; right: 0; 
+            background: white; box-shadow: 0 -4px 12px rgba(0,0,0,0.05); 
+        }
+        .btn-nav { 
+            flex: 1; padding: 14px; border-radius: 12px; 
+            border: 1px solid #e2e8f0; font-weight: bold; 
+            font-size: 15px; cursor: pointer; background: #fff; 
+        }
         .btn-next { background: var(--primary); color: white; border: none; }
 
-        #resultPage { display: none; position: fixed; inset: 0; background: white; z-index: 1000; padding: 30px; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
-        .res-badge { font-size: 80px; margin-bottom: 15px; }
-        .ai-box { background: #f0fdf4; padding: 20px; border-radius: 15px; font-size: 15px; border: 1px solid #dcfce7; color: #166534; margin-top: 20px; }
-
-        #loader { position: fixed; inset: 0; background: white; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 2000; font-weight: bold; }
-        .spinner { width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 10px; }
+        #resultPage { 
+            display: none; position: fixed; inset: 0; 
+            background: white; z-index: 1000; padding: 25px; 
+            flex-direction: column; align-items: center; 
+            justify-content: center; text-align: center; 
+        }
+        .res-badge { font-size: 64px; margin-bottom: 10px; }
+        
+        #loader { 
+            position: fixed; inset: 0; background: white; 
+            display: flex; flex-direction: column; 
+            align-items: center; justify-content: center; 
+            z-index: 2000; font-weight: bold; 
+        }
+        .spinner { 
+            width: 30px; height: 30px; border: 3px solid #f3f3f3; 
+            border-top: 3px solid var(--primary); border-radius: 50%; 
+            animation: spin 1s linear infinite; margin-bottom: 10px; 
+        }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
@@ -67,10 +160,10 @@
     <div class="header">
         <div class="user-block">
             <div id="userName">Foydalanuvchi</div>
-            <div class="sub-text">Rash Tekshiruv</div>
+            <div class="sub-text">RASH Platforma</div>
         </div>
-        <div class="timer-container"><div id="timer" class="timer-box t-blue">00:00:00</div></div>
-        <button class="btn-finish-top" onclick="askFinish()">🏁 Yakunlash</button>
+        <div id="timer" class="timer-box t-blue">00:00</div>
+        <button class="btn-finish-top" onclick="askFinish()">Tugatish</button>
     </div>
 
     <div class="matrix-grid" id="matrix"></div>
@@ -88,20 +181,16 @@
 
     <div id="resultPage">
         <div class="res-badge" id="resIcon">🎊</div>
-        <div id="resScore" style="font-size: 24px; font-weight: 800;">0 / 0</div>
-        <div id="resPercent" style="font-size: 40px; font-weight: 900; color: var(--primary);">0%</div>
-        <p id="resMotivation" style="font-size: 18px; color: #4b5563;"></p>
-        <div class="ai-box">
-            🤖 Xatolarni to'g'rilash va qaysi yo'nalishda xato qilganingizni tushunish uchun <b>AI yordamchisiga</b> murojaat qiling.
-        </div>
-        <button class="btn-next" style="margin-top: 30px; width: 100%; padding: 15px; border-radius: 10px; border:none;" onclick="tg.close()">Botga qaytish</button>
+        <div id="resScore" style="font-size: 22px; font-weight: 800;">0 / 0</div>
+        <div id="resPercent" style="font-size: 48px; font-weight: 900; color: var(--primary);">0%</div>
+        <p id="resMotivation" style="font-size: 16px; color: #64748b; margin: 15px 0;"></p>
+        <button class="btn-next" style="width: 100%; padding: 15px; border-radius: 12px;" onclick="tg.close()">Botga qaytish</button>
     </div>
 
     <script>
         let tg = window.Telegram.WebApp;
         tg.expand();
-        tg.ready();
-
+        
         let currentIdx = 0, questions = [], answers = {}, isDone = false, timeLeft = 0;
 
         document.getElementById('userName').innerText = tg.initDataUnsafe.user?.first_name || "O'quvchi";
@@ -114,25 +203,35 @@
                 .then(r => r.json())
                 .then(data => {
                     questions = data;
-                    timeLeft = questions.length * 60;
+                    timeLeft = questions.length * 60; // Har bir savolga 1 daqiqa
                     document.getElementById('loader').style.display = 'none';
                     startTimer();
                     updateUI();
                 })
-                .catch(() => { document.getElementById('loader').innerText = "Fayl topilmadi!"; });
+                .catch(() => { 
+                    document.getElementById('loader').innerText = "Ma'lumot topilmadi!"; 
+                });
         }
 
         function updateUI() {
             if(!questions.length) return;
             const q = questions[currentIdx];
             document.getElementById('qText').innerText = `${currentIdx+1}. ${q.t}`;
+            
             const optDiv = document.getElementById('options');
             optDiv.innerHTML = '';
+            
             ['a','b','c','d'].forEach(k => {
+                if(!q[k]) return;
                 const item = document.createElement('div');
                 item.className = `option ${answers[currentIdx] === k.toUpperCase() ? 'selected' : ''}`;
                 item.innerText = `${k.toUpperCase()}) ${q[k]}`;
-                item.onclick = () => { if(!isDone) { answers[currentIdx] = k.toUpperCase(); updateUI(); } };
+                item.onclick = () => { 
+                    if(!isDone) { 
+                        answers[currentIdx] = k.toUpperCase(); 
+                        updateUI(); 
+                    } 
+                };
                 optDiv.appendChild(item);
             });
             renderMatrix();
@@ -144,45 +243,75 @@
             questions.forEach((_, i) => {
                 const btn = document.createElement('div');
                 btn.className = `matrix-item ${i === currentIdx ? 'active' : ''}`;
-                if(isDone) btn.classList.add(answers[i] === questions[i].ans ? 'done' : 'wrong');
-                else if(answers[i]) btn.classList.add('done');
+                
+                if(isDone) {
+                    btn.classList.add(answers[i] === questions[i].ans ? 'done' : 'wrong');
+                } else if(answers[i]) {
+                    btn.classList.add('done');
+                }
+                
                 btn.innerText = i + 1;
                 btn.onclick = () => { 
-                    if(isDone) tg.showAlert(`Savol #${i+1}: To'g'ri javob ${questions[i].ans}`);
-                    currentIdx = i; updateUI(); 
+                    currentIdx = i; 
+                    updateUI(); 
+                    if(isDone) tg.showScanQrPopup({text: `To'g'ri javob: ${questions[i].ans}`});
                 };
                 m.appendChild(btn);
             });
+            // Hozirgi savolni markazga surish
+            const activeBtn = m.children[currentIdx];
+            if(activeBtn) activeBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
         }
 
-        function move(s) { currentIdx = Math.max(0, Math.min(questions.length-1, currentIdx+s)); updateUI(); }
+        function move(s) { 
+            currentIdx = Math.max(0, Math.min(questions.length-1, currentIdx+s)); 
+            updateUI(); 
+        }
 
         function startTimer() {
             const tBox = document.getElementById('timer'), full = timeLeft;
             const timer = setInterval(() => {
-                if(timeLeft <= 0 || isDone) { clearInterval(timer); if(!isDone) finalize(); return; }
+                if(timeLeft <= 0 || isDone) { 
+                    clearInterval(timer); 
+                    if(!isDone) finalize(); 
+                    return; 
+                }
                 timeLeft--;
-                let h = Math.floor(timeLeft/3600), m = Math.floor((timeLeft%3600)/60), s = timeLeft%60;
-                tBox.innerText = `${h}:${m<10?'0'+m:m}:${s<10?'0'+s:s}`;
+                let m = Math.floor(timeLeft/60), s = timeLeft%60;
+                tBox.innerText = `${m}:${s<10?'0'+s:s}`;
+                
                 let p = (timeLeft/full)*100;
-                tBox.className = `timer-box ${p > 50 ? 't-blue' : (p > 20 ? 't-yellow' : 't-red')}`;
+                if(p < 20) tBox.className = 'timer-box t-red';
+                else if(p < 50) tBox.className = 'timer-box t-yellow';
+                else tBox.className = 'timer-box t-blue';
             }, 1000);
         }
 
-        function askFinish() { tg.showConfirm("Testni yakunlaysizmi?", (ok) => { if(ok) finalize(); }); }
+        function askFinish() { 
+            tg.showConfirm("Testni yakunlab, natijani ko'rmoqchimisiz?", (ok) => { if(ok) finalize(); }); 
+        }
 
         function finalize() {
             isDone = true;
             let score = 0;
             questions.forEach((q, i) => { if(answers[i] === q.ans) score++; });
             let p = Math.round((score/questions.length)*100);
+            
             document.getElementById('quizUI').style.display = 'none';
             document.getElementById('resultPage').style.display = 'flex';
-            document.getElementById('resScore').innerText = `${score} / ${questions.length}`;
+            document.getElementById('matrix').style.opacity = '0.5';
+            
+            document.getElementById('resScore').innerText = `Natija: ${score} / ${questions.length}`;
             document.getElementById('resPercent').innerText = `${p}%`;
-            document.getElementById('resMotivation').innerText = p >= 70 ? "Barakalla! Siz juda yaxshi natija ko'rsatdingiz!" : "Yana biroz harakat qilsangiz, albatta uddalaysiz!";
+            
+            let mot = "Yana biroz harakat qiling! 😊";
+            if(p >= 90) mot = "Ajoyib natija! Siz kamsiz! 🏆";
+            else if(p >= 70) mot = "Yaxshi natija, davom eting! 💪";
+            
+            document.getElementById('resMotivation').innerText = mot;
+            
+            // Botga natijani yuborish
             tg.sendData(JSON.stringify({score, total: questions.length, percent: p}));
-            updateUI();
         }
     </script>
 </body>
