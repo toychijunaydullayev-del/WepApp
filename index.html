@@ -3,192 +3,178 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>Test Platformasi</title>
+    <title>Rash Tekshiruv Platformasi</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
-            --tg-theme-bg-color: #f4f7f9;
-            --primary-color: #6a1b9a;
-            --correct-color: #4caf50;
-            --incorrect-color: #f44336;
+            --bg-color: #f0f4f8;
+            --primary-color: #0088cc;
+            --success-color: #4caf50;
+            --matrix-unselected: #bbdefb; /* Och ko'k */
+            --matrix-selected: #4caf50;   /* Yashil */
+            --text-color: #333;
         }
 
         body {
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--tg-theme-bg-color);
+            font-family: 'Segoe UI', sans-serif;
+            background-color: var(--bg-color);
             margin: 0;
-            padding: 15px;
-            color: #333;
-            user-select: none;
+            padding: 0;
+            overflow-x: hidden;
+            color: var(--text-color);
         }
 
-        .header-box {
-            background: white;
-            border-radius: 15px;
-            padding: 15px;
-            text-align: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-            margin-bottom: 15px;
-        }
-
-        #timer {
-            font-size: 28px;
+        /* --- XIRA FON REKLAMASI --- */
+        .watermark {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-30deg);
+            font-size: 40px;
+            color: rgba(0, 0, 0, 0.05); /* Juda xira */
+            white-space: nowrap;
+            z-index: -1;
+            pointer-events: none;
             font-weight: bold;
-            color: var(--primary-color);
         }
 
-        .sarf-vaqt {
-            font-size: 12px;
-            color: #888;
-            text-transform: uppercase;
-        }
-
-        .progress-container {
-            width: 100%;
-            background: #e0e0e0;
-            border-radius: 10px;
-            height: 8px;
-            margin: 15px 0;
-            overflow: hidden;
-        }
-
-        #progressBar {
-            width: 0%;
-            height: 100%;
-            background: #333;
-            transition: width 0.3s;
-        }
-
-        .question-card {
-            background: white;
-            border-radius: 20px;
-            padding: 20px;
-            min-height: 200px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-        }
-
-        #qTitle {
-            font-size: 14px;
-            color: #888;
-            margin-bottom: 10px;
-        }
-
-        #qText {
-            font-size: 18px;
-            font-weight: 600;
-            line-height: 1.4;
-            margin-bottom: 20px;
-        }
-
-        .option {
+        /* --- YUQORI PANEL (HEADER) --- */
+        .header {
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            padding: 15px;
-            border: 2px solid #f0f0f0;
-            border-radius: 12px;
-            margin-bottom: 10px;
+            background: white;
+            padding: 10px 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .user-info { display: flex; flex-direction: column; }
+        #userName { font-weight: bold; font-size: 14px; color: var(--primary-color); }
+        .test-label { font-size: 11px; color: #888; }
+
+        #timer { font-size: 20px; font-weight: bold; font-family: monospace; }
+
+        .btn-finish {
+            background-color: var(--success-color);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-weight: bold;
             cursor: pointer;
-            transition: 0.2s;
-            font-weight: 500;
         }
 
-        .option:active {
-            background-color: #f9f9f9;
-            transform: scale(0.98);
-        }
-
-        .option.selected {
-            border-color: var(--primary-color);
-            background-color: #f3e5f5;
+        /* --- MATRITSA (SAVOLLAR RO'YXATI) --- */
+        .matrix-container {
+            padding: 10px;
+            background: #fff;
+            border-bottom: 1px solid #ddd;
         }
 
         .matrix-grid {
-            display: grid;
-            grid-template-columns: repeat(6, 1fr);
+            display: flex;
+            overflow-x: auto;
             gap: 8px;
-            margin-top: 25px;
-            padding-bottom: 80px;
+            padding: 5px 0;
         }
 
         .matrix-item {
-            aspect-ratio: 1;
+            min-width: 35px;
+            height: 35px;
+            background: var(--matrix-unselected);
             border: none;
-            border-radius: 8px;
-            background: #e0e6ed;
+            border-radius: 50%;
             font-weight: bold;
-            color: #555;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 14px;
+            cursor: pointer;
+            transition: 0.3s;
         }
 
-        .matrix-item.active {
-            background: #5c6bc0;
-            color: white;
-        }
+        .matrix-item.active { border: 2px solid var(--primary-color); transform: scale(1.1); }
+        .matrix-item.done { background: var(--matrix-selected); color: white; }
 
-        .matrix-item.done {
-            background: #aab4be;
-            color: white;
-        }
-
-        .footer-btns {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
+        /* --- TEST MAYDONI --- */
+        .container { padding: 20px; }
+        .question-card {
             background: white;
-            padding: 15px;
-            display: flex;
-            gap: 10px;
-            box-shadow: 0 -5px 15px rgba(0,0,0,0.05);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            min-height: 250px;
         }
 
-        .btn {
-            flex: 1;
+        #qText { font-size: 18px; font-weight: 600; margin-bottom: 20px; }
+
+        .option {
             padding: 15px;
+            border: 2px solid #eee;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .option.selected { border-color: var(--primary-color); background: #e3f2fd; }
+
+        /* --- NAVIGATSIYA TUGMALARI --- */
+        .nav-btns {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            gap: 15px;
+        }
+
+        .btn-nav {
+            flex: 1;
+            padding: 12px;
             border: none;
-            border-radius: 12px;
+            border-radius: 10px;
+            background: white;
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
             font-weight: bold;
-            font-size: 16px;
             cursor: pointer;
         }
 
-        .btn-finish {
-            background-color: var(--primary-color);
-            color: white;
-        }
+        .btn-nav:disabled { opacity: 0.3; }
+
     </style>
 </head>
 <body>
 
-    <div class="header-box">
-        <div id="timer">10:00</div>
-        <div class="sarf-vaqt">Sarflandigan vaqt</div>
-        <div class="progress-container">
-            <div id="progressBar"></div>
+    <!-- Xira fon -->
+    <div class="watermark">RASH_TEKSHIRUV KANALI</div>
+    <div class="watermark" style="top: 20%;">RASH_TEKSHIRUV KANALI</div>
+    <div class="watermark" style="top: 80%;">RASH_TEKSHIRUV KANALI</div>
+
+    <div class="header">
+        <div class="user-info">
+            <span id="userName">Foydalanuvchi</span>
+            <span class="test-label">Savol matritsasi</span>
         </div>
+        <div id="timer">00:00:00</div>
+        <button class="btn-finish" onclick="finishTest()">🏁 Yakunlash</button>
     </div>
 
-    <div class="question-card">
-        <div id="qTitle">Savol 1</div>
-        <div id="qText">Savol yuklanmoqda...</div>
-        
-        <div id="optionsContainer">
-            <div class="option" onclick="selectOption('A')">A) Variant A</div>
-            <div class="option" onclick="selectOption('B')">B) Variant B</div>
-            <div class="option" onclick="selectOption('C')">C) Variant C</div>
-            <div class="option" onclick="selectOption('D')">D) Variant D</div>
+    <div class="matrix-container">
+        <div class="matrix-grid" id="matrix"></div>
+    </div>
+
+    <div class="container">
+        <div class="question-card">
+            <div id="qText">Savol yuklanmoqda...</div>
+            <div id="optionsContainer"></div>
         </div>
-    </div>
 
-    <div class="matrix-grid" id="matrix">
-        <!-- Matritsa raqamlari JS orqali qo'shiladi -->
-    </div>
-
-    <div class="footer-btns">
-        <button class="btn btn-finish" onclick="finishTest()">🏁 Testni yakunlash</button>
+        <div class="nav-btns">
+            <button id="prevBtn" class="btn-nav" onclick="prevQ()">⬅️ Oldingi</button>
+            <button id="nextBtn" class="btn-nav" onclick="nextQ()">Keyingi ➡️</button>
+        </div>
     </div>
 
     <script>
@@ -196,89 +182,101 @@
         tg.expand();
 
         let currentIdx = 0;
-        let totalQuestions = 17;
+        let questions = []; 
         let answers = {};
-        let timeLeft = 600; // 10 minut
+        let timeLeft = 3600; // 1 soat default
 
-        // Savol ma'lumotlari (namuna)
-        const mockQuestions = [
-            { text: "Moslikni toping. 1. Tarbiyaviy faoliyatni tashkil etish...", a: "1c2a", b: "1a2c", c: "1a2b", d: "1c2b" },
-            // Boshqa savollarni ham shu yerga qo'shish mumkin
-        ];
+        // Foydalanuvchi nomini o'rnatish
+        document.getElementById('userName').innerText = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.first_name : "O'quvchi";
 
-        function initMatrix() {
-            const matrixContainer = document.getElementById('matrix');
-            matrixContainer.innerHTML = '';
-            for (let i = 0; i < totalQuestions; i++) {
-                const btn = document.createElement('button');
-                btn.className = 'matrix-item';
-                if (i === currentIdx) btn.classList.add('active');
-                if (answers[i]) btn.classList.add('done');
-                btn.innerText = i + 1;
-                btn.onclick = () => jumpTo(i);
-                matrixContainer.appendChild(btn);
+        // URL dan ma'lumotlarni dekodlash
+        const urlParams = new URLSearchParams(window.location.search);
+        const encodedData = urlParams.get('data');
+
+        if (encodedData) {
+            try {
+                questions = JSON.parse(atob(encodedData));
+                timeLeft = questions.length * 60; // Har bir savolga 1 minutdan
+            } catch (e) {
+                document.getElementById('qText').innerText = "Xato: Savollarni yuklab bo'lmadi.";
             }
         }
 
         function updateUI() {
-            document.getElementById('qTitle').innerText = `Savol ${currentIdx + 1}`;
-            const q = mockQuestions[0]; // Hozircha namuna uchun birinchi savol
-            document.getElementById('qText').innerText = q.text;
-            
-            // Progress bar
-            const progress = ((currentIdx + 1) / totalQuestions) * 100;
-            document.getElementById('progressBar').style.width = progress + "%";
+            if (questions.length === 0) return;
 
-            // Variantlarni tozalash va tanlanganni belgilash
-            const opts = document.querySelectorAll('.option');
-            opts.forEach(opt => {
-                opt.classList.remove('selected');
-                if(answers[currentIdx] === opt.innerText[0]) opt.classList.add('selected');
+            const q = questions[currentIdx];
+            document.getElementById('qText').innerText = `${currentIdx + 1}. ${q.t}`;
+            
+            const container = document.getElementById('optionsContainer');
+            container.innerHTML = '';
+            ['a','b','c','d'].forEach(key => {
+                const opt = document.createElement('div');
+                opt.className = `option ${answers[currentIdx] === key.toUpperCase() ? 'selected' : ''}`;
+                opt.innerText = `${key.toUpperCase()}) ${q[key]}`;
+                opt.onclick = () => selectOption(key.toUpperCase());
+                container.appendChild(opt);
             });
 
+            document.getElementById('prevBtn').disabled = (currentIdx === 0);
+            document.getElementById('nextBtn').innerText = (currentIdx === questions.length - 1) ? "Yakunlash 🏁" : "Keyingi ➡️";
+            
             initMatrix();
+        }
+
+        function initMatrix() {
+            const matrixContainer = document.getElementById('matrix');
+            matrixContainer.innerHTML = '';
+            questions.forEach((_, i) => {
+                const btn = document.createElement('button');
+                btn.className = `matrix-item ${i === currentIdx ? 'active' : ''} ${answers[i] ? 'done' : ''}`;
+                btn.innerText = i + 1;
+                btn.onclick = () => { currentIdx = i; updateUI(); };
+                matrixContainer.appendChild(btn);
+            });
         }
 
         function selectOption(choice) {
             answers[currentIdx] = choice;
             updateUI();
-            // Avtomatik keyingisiga o'tish (ixtiyoriy)
-            if(currentIdx < totalQuestions - 1) {
-                setTimeout(() => { currentIdx++; updateUI(); }, 300);
+        }
+
+        function nextQ() {
+            if (currentIdx < questions.length - 1) {
+                currentIdx++;
+                updateUI();
+            } else {
+                finishTest();
             }
         }
 
-        function jumpTo(idx) {
-            currentIdx = idx;
-            updateUI();
+        function prevQ() {
+            if (currentIdx > 0) {
+                currentIdx--;
+                updateUI();
+            }
         }
 
         function finishTest() {
             if (confirm("Testni yakunlashni xohlaysizmi?")) {
                 let score = 0;
-                // Natijani hisoblash (Namuna: hamma javob A bo'lsa to'g'ri deb hisoblaymiz)
-                Object.keys(answers).forEach(key => {
-                    if(answers[key] === 'A') score++;
+                questions.forEach((q, i) => {
+                    if (answers[i] === q.ans) score++;
                 });
-
-                const resultData = {
-                    score: score,
-                    total: totalQuestions,
-                    answers: answers
-                };
-
-                tg.sendData(JSON.stringify(resultData));
+                const result = { score: score, total: questions.length, time: document.getElementById('timer').innerText };
+                tg.sendData(JSON.stringify(result));
             }
         }
 
-        // Taymer funksiyasi
+        // TAYMER (HH:MM:SS formatda)
         setInterval(() => {
             if (timeLeft > 0) {
                 timeLeft--;
-                let min = Math.floor(timeLeft / 60);
-                let sec = timeLeft % 60;
+                let h = Math.floor(timeLeft / 3600);
+                let m = Math.floor((timeLeft % 3600) / 60);
+                let s = timeLeft % 60;
                 document.getElementById('timer').innerText = 
-                    `${min}:${sec < 10 ? '0' + sec : sec}`;
+                    `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
             } else {
                 finishTest();
             }
