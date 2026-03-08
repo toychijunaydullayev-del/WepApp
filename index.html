@@ -322,9 +322,12 @@
             document.getElementById('resPercent').innerText = `${p}%`;
             document.getElementById('resMotivation').innerText = p >= 70 ? "Barakalla! Zo'r natija!" : "Hali ko'proq o'qish kerak! 😊";
             
-            tg.sendData(JSON.stringify({score, total: questions.length, percent: p}));
-            updateUI(); // Xatolarni ko'rsatish rejimiga o'tish
-        }
+            tg.sendData(JSON.stringify({
+    score: score, 
+    total: questions.length, 
+    percent: p, 
+    subject: "Matematika" // Fan nomi aniq bo'lishi shart!
+}));
 
         function closeAndReturn() {
             document.getElementById('resultPage').style.display = 'none';
@@ -334,3 +337,4 @@
     </script>
 </body>
 </html>
+
