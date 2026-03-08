@@ -10,7 +10,7 @@
             --bg: #f8fafc;
             /* Savol foni: Och yashil */
             --q-bg: #DCFCE7; 
-            /* Savol matni: To'q qora/yashil */
+            /* Savol matni: To'q qora */
             --q-text: #052e16; 
             --primary: #0088cc;
             --success: #22c55e;
@@ -18,6 +18,7 @@
             --blue: #3b82f6;
             --yellow: #f59e0b;
             --red: #ef4444;
+            --vab-purple: #6a1b9a;
         }
 
         body { 
@@ -32,7 +33,7 @@
         .watermark { 
             position: fixed; top: 50%; left: 50%; 
             transform: translate(-50%, -50%) rotate(-30deg); 
-            font-size: 35px; color: rgba(0,0,0,0.03); 
+            font-size: 30px; color: rgba(0,0,0,0.02); 
             z-index: -1; font-weight: 900; 
             white-space: nowrap; pointer-events: none; 
         }
@@ -45,13 +46,13 @@
         }
         
         .user-block { display: flex; flex-direction: column; flex: 1; }
-        #userName { font-size: 18px; font-weight: 800; color: #1a1a1a; margin: 0; }
-        .sub-text { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 0.5px; }
+        #userName { font-size: 17px; font-weight: 800; color: #1a1a1a; margin: 0; }
+        .sub-text { font-size: 10px; color: #888; text-transform: uppercase; }
         
         .timer-box { 
             padding: 6px 12px; border-radius: 10px; 
             color: white; font-weight: bold; 
-            font-size: 18px; font-family: 'Courier New', monospace; 
+            font-size: 18px; font-family: monospace; 
         }
         .t-blue { background: var(--blue); }
         .t-yellow { background: var(--yellow); }
@@ -60,9 +61,10 @@
         .btn-finish-top { 
             background: var(--error); color: white; border: none; 
             padding: 8px 12px; border-radius: 10px; 
-            font-weight: bold; cursor: pointer; font-size: 13px;
+            font-weight: bold; cursor: pointer; font-size: 12px;
         }
 
+        /* Savol raqamlari Matrix */
         .matrix-grid { 
             display: flex; gap: 8px; padding: 12px; 
             background: white; border-bottom: 1px solid #eee; 
@@ -74,7 +76,7 @@
             background: #f1f5f9; color: #475569; 
             font-weight: bold; font-size: 14px; 
             display: flex; align-items: center; justify-content: center; 
-            cursor: pointer; flex-shrink: 0;
+            cursor: pointer; flex-shrink: 0; transition: 0.2s;
         }
         .matrix-item.active { border: 2px solid var(--primary); background: #e0f2fe; color: var(--primary); }
         .matrix-item.done { background: var(--success) !important; color: white; }
@@ -85,40 +87,51 @@
         /* SAVOL KARTASI */
         .question-card { 
             background: var(--q-bg); 
-            padding: 20px; 
+            padding: 22px; 
             border-radius: 18px; 
             border: 1px solid #bdf0cc; 
             box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            margin-bottom: 15px;
         }
         #qText { 
             font-size: 18px; 
             font-weight: 700; 
-            line-height: 1.4; 
+            line-height: 1.5; 
             color: var(--q-text); /* Qora/To'q yashil matn */
-            margin-bottom: 20px;
         }
         
         /* VARIANTLAR */
         .option { 
             background: white; 
-            padding: 15px; 
+            padding: 16px; 
             border-radius: 12px; 
             margin-top: 10px; 
             border: 2px solid transparent; 
             transition: all 0.2s ease; 
             font-size: 16px; 
             color: #334155;
-            display: flex;
-            align-items: center;
             box-shadow: 0 2px 4px rgba(0,0,0,0.02);
         }
         .option.selected { 
             border-color: var(--primary); 
             background: #f0f9ff; 
-            font-weight: 600; 
-            color: var(--primary);
+            font-weight: 600;
         }
 
+        /* Testdan keyingi natija ranglari */
+        .option.correct-result {
+            border-color: #22c55e !important;
+            background: #f0fdf4 !important;
+            color: #166534 !important;
+            font-weight: bold;
+        }
+        .option.wrong-result {
+            border-color: #ef4444 !important;
+            background: #fef2f2 !important;
+            color: #991b1b !important;
+        }
+
+        /* Navigatsiya tugmalari */
         .nav-bar { 
             display: flex; gap: 12px; padding: 15px; 
             position: fixed; bottom: 0; left: 0; right: 0; 
@@ -131,14 +144,21 @@
         }
         .btn-next { background: var(--primary); color: white; border: none; }
 
+        /* Natija sahifasi */
         #resultPage { 
             display: none; position: fixed; inset: 0; 
             background: white; z-index: 1000; padding: 25px; 
             flex-direction: column; align-items: center; 
             justify-content: center; text-align: center; 
         }
-        .res-badge { font-size: 64px; margin-bottom: 10px; }
         
+        #vabNotice {
+            margin: 15px 0; padding: 12px; 
+            background: #f3e5f5; border: 1px dashed var(--vab-purple); 
+            border-radius: 10px; color: var(--vab-purple); 
+            font-weight: bold; font-size: 13px;
+        }
+
         #loader { 
             position: fixed; inset: 0; background: white; 
             display: flex; flex-direction: column; 
@@ -180,11 +200,17 @@
     </div>
 
     <div id="resultPage">
-        <div class="res-badge" id="resIcon">🎊</div>
-        <div id="resScore" style="font-size: 22px; font-weight: 800;">0 / 0</div>
+        <div id="resIcon" style="font-size: 60px;">🎊</div>
+        <div id="resScore" style="font-size: 22px; font-weight: 800; margin-top: 10px;">0 / 0</div>
         <div id="resPercent" style="font-size: 48px; font-weight: 900; color: var(--primary);">0%</div>
-        <p id="resMotivation" style="font-size: 16px; color: #64748b; margin: 15px 0;"></p>
-        <button class="btn-next" style="width: 100%; padding: 15px; border-radius: 12px;" onclick="tg.close()">Botga qaytish</button>
+        <p id="resMotivation" style="font-size: 16px; color: #64748b; margin: 10px 0;"></p>
+        
+        <div id="vabNotice">
+            💡 Eslatma: Ushbu fandan oy davomida ketma-ket 3 marta 1-o'rinni egallab 50 VAB sohibi bo'ling!
+        </div>
+
+        <button class="btn-next" style="width: 100%; padding: 15px; border-radius: 12px; margin-top: 10px;" onclick="closeAndReturn()">Botga qaytish</button>
+        <p style="font-size: 12px; color: #aaa; margin-top: 15px;">Yuqoridagi raqamlarni bosib xatolaringizni ko'rishingiz mumkin.</p>
     </div>
 
     <script>
@@ -203,14 +229,12 @@
                 .then(r => r.json())
                 .then(data => {
                     questions = data;
-                    timeLeft = questions.length * 60; // Har bir savolga 1 daqiqa
+                    timeLeft = questions.length * 60;
                     document.getElementById('loader').style.display = 'none';
                     startTimer();
                     updateUI();
                 })
-                .catch(() => { 
-                    document.getElementById('loader').innerText = "Ma'lumot topilmadi!"; 
-                });
+                .catch(() => { document.getElementById('loader').innerText = "Fayl topilmadi!"; });
         }
 
         function updateUI() {
@@ -224,16 +248,28 @@
             ['a','b','c','d'].forEach(k => {
                 if(!q[k]) return;
                 const item = document.createElement('div');
-                item.className = `option ${answers[currentIdx] === k.toUpperCase() ? 'selected' : ''}`;
-                item.innerText = `${k.toUpperCase()}) ${q[k]}`;
-                item.onclick = () => { 
-                    if(!isDone) { 
-                        answers[currentIdx] = k.toUpperCase(); 
-                        updateUI(); 
-                    } 
-                };
+                const keyUpper = k.toUpperCase();
+                
+                let className = "option";
+                if (isDone) {
+                    if (keyUpper === q.ans) className += " correct-result";
+                    else if (answers[currentIdx] === keyUpper) className += " wrong-result";
+                } else if (answers[currentIdx] === keyUpper) {
+                    className += " selected";
+                }
+
+                item.className = className;
+                item.innerText = `${keyUpper}) ${q[k]}`;
+                item.onclick = () => { if(!isDone) { answers[currentIdx] = keyUpper; updateUI(); } };
                 optDiv.appendChild(item);
             });
+
+            if (isDone) {
+                const info = document.createElement('div');
+                info.style.cssText = "margin-top:15px; font-weight:bold; color:#166534; font-size:14px; background:#f0fdf4; padding:10px; border-radius:8px; border:1px solid #bdf0cc;";
+                info.innerHTML = `✅ To'g'ri javob: ${q.ans}`;
+                optDiv.appendChild(info);
+            }
             renderMatrix();
         }
 
@@ -243,22 +279,12 @@
             questions.forEach((_, i) => {
                 const btn = document.createElement('div');
                 btn.className = `matrix-item ${i === currentIdx ? 'active' : ''}`;
-                
-                if(isDone) {
-                    btn.classList.add(answers[i] === questions[i].ans ? 'done' : 'wrong');
-                } else if(answers[i]) {
-                    btn.classList.add('done');
-                }
-                
+                if(isDone) btn.classList.add(answers[i] === questions[i].ans ? 'done' : 'wrong');
+                else if(answers[i]) btn.classList.add('done');
                 btn.innerText = i + 1;
-                btn.onclick = () => { 
-                    currentIdx = i; 
-                    updateUI(); 
-                    if(isDone) tg.showScanQrPopup({text: `To'g'ri javob: ${questions[i].ans}`});
-                };
+                btn.onclick = () => { currentIdx = i; updateUI(); };
                 m.appendChild(btn);
             });
-            // Hozirgi savolni markazga surish
             const activeBtn = m.children[currentIdx];
             if(activeBtn) activeBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
         }
@@ -271,24 +297,17 @@
         function startTimer() {
             const tBox = document.getElementById('timer'), full = timeLeft;
             const timer = setInterval(() => {
-                if(timeLeft <= 0 || isDone) { 
-                    clearInterval(timer); 
-                    if(!isDone) finalize(); 
-                    return; 
-                }
+                if(timeLeft <= 0 || isDone) { clearInterval(timer); if(!isDone) finalize(); return; }
                 timeLeft--;
                 let m = Math.floor(timeLeft/60), s = timeLeft%60;
                 tBox.innerText = `${m}:${s<10?'0'+s:s}`;
-                
                 let p = (timeLeft/full)*100;
-                if(p < 20) tBox.className = 'timer-box t-red';
-                else if(p < 50) tBox.className = 'timer-box t-yellow';
-                else tBox.className = 'timer-box t-blue';
+                tBox.className = `timer-box ${p > 50 ? 't-blue' : (p > 20 ? 't-yellow' : 't-red')}`;
             }, 1000);
         }
 
         function askFinish() { 
-            tg.showConfirm("Testni yakunlab, natijani ko'rmoqchimisiz?", (ok) => { if(ok) finalize(); }); 
+            tg.showConfirm("Testni yakunlaysizmi?", (ok) => { if(ok) finalize(); }); 
         }
 
         function finalize() {
@@ -299,19 +318,18 @@
             
             document.getElementById('quizUI').style.display = 'none';
             document.getElementById('resultPage').style.display = 'flex';
-            document.getElementById('matrix').style.opacity = '0.5';
-            
             document.getElementById('resScore').innerText = `Natija: ${score} / ${questions.length}`;
             document.getElementById('resPercent').innerText = `${p}%`;
+            document.getElementById('resMotivation').innerText = p >= 70 ? "Barakalla! Zo'r natija!" : "Hali ko'proq o'qish kerak! 😊";
             
-            let mot = "Yana biroz harakat qiling! 😊";
-            if(p >= 90) mot = "Ajoyib natija! Siz kamsiz! 🏆";
-            else if(p >= 70) mot = "Yaxshi natija, davom eting! 💪";
-            
-            document.getElementById('resMotivation').innerText = mot;
-            
-            // Botga natijani yuborish
             tg.sendData(JSON.stringify({score, total: questions.length, percent: p}));
+            updateUI(); // Xatolarni ko'rsatish rejimiga o'tish
+        }
+
+        function closeAndReturn() {
+            document.getElementById('resultPage').style.display = 'none';
+            document.getElementById('quizUI').style.display = 'block';
+            document.getElementById('matrix').style.opacity = '1';
         }
     </script>
 </body>
