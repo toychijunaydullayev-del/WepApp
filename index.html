@@ -7,119 +7,108 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
-            --bg-color: #f8fafc;
-            --q-bg: #e8f5e9; /* Och yashil fon */
+            --bg: #f3f4f6;
+            --q-bg: #e8f5e9; /* Och yashil */
             --primary: #0088cc;
-            --blue: #3b82f6;
-            --yellow: #f59e0b;
-            --red: #ef4444;
-            --green: #22c55e;
+            --success: #22c55e;
+            --error: #ef4444;
         }
 
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg-color); margin: 0; padding: 0; user-select: none; }
-
-        .watermark {
-            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-30deg);
-            font-size: 30px; color: rgba(0,0,0,0.03); z-index: -1; font-weight: bold; white-space: nowrap;
-        }
-
-        /* --- HEADER --- */
-        .header {
-            background: white; padding: 15px; display: flex; justify-content: space-between; align-items: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05); sticky: top; z-index: 10;
-        }
-        #userName { font-size: 20px; font-weight: 800; color: var(--primary); }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, sans-serif; background: var(--bg); margin: 0; padding: 0; user-select: none; }
         
-        .timer-box {
-            padding: 5px 15px; border-radius: 20px; color: white; font-weight: bold; font-family: monospace;
-            transition: 0.5s; font-size: 18px;
-        }
-        .t-blue { background: var(--blue); }
-        .t-yellow { background: var(--yellow); }
-        .t-red { background: var(--red); }
+        /* Xira Reklama */
+        .watermark { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-30deg); font-size: 32px; color: rgba(0,0,0,0.03); z-index: -1; font-weight: 900; white-space: nowrap; pointer-events: none; }
 
-        .btn-finish { background: var(--green); color: white; border: none; padding: 10px 20px; border-radius: 10px; font-weight: bold; cursor: pointer; }
+        /* Header */
+        .header { background: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .user-block { display: flex; flex-direction: column; }
+        #userName { font-size: 24px; font-weight: 900; color: #1a1a1a; margin-bottom: 2px; }
+        .sub-text { font-size: 12px; color: #888; }
+        
+        .timer-box { padding: 6px 12px; border-radius: 10px; color: white; font-weight: bold; font-size: 18px; transition: 0.5s; }
+        .t-blue { background: #3b82f6; }
+        .t-yellow { background: #f59e0b; }
+        .t-red { background: #ef4444; }
 
-        /* --- MATRIX (5 qator) --- */
-        .matrix-container { padding: 10px; background: white; border-bottom: 1px solid #e2e8f0; }
-        .matrix-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; max-height: 150px; overflow-y: auto; padding: 5px; }
-        .matrix-item {
-            aspect-ratio: 1; border-radius: 8px; border: none; background: #dbeafe; /* och ko'k */
-            font-weight: bold; color: #1e40af; cursor: pointer; display: flex; align-items: center; justify-content: center;
-        }
-        .matrix-item.active { outline: 3px solid var(--primary); }
-        .matrix-item.done { background: var(--green) !important; color: white; }
-        .matrix-item.wrong { background: var(--red) !important; color: white; }
+        /* Matrix (5 qatorli setka) */
+        .matrix-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; padding: 15px; background: white; border-bottom: 1px solid #eee; }
+        .matrix-item { aspect-ratio: 1; border-radius: 8px; border: none; background: #e0f2fe; color: #0369a1; font-weight: bold; font-size: 14px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        .matrix-item.active { box-shadow: 0 0 0 3px var(--primary); }
+        .matrix-item.done { background: var(--success) !important; color: white; }
+        .matrix-item.wrong { background: var(--error) !important; color: white; }
 
-        /* --- QUESTION CARD --- */
+        /* Test Content */
         .container { padding: 15px; }
-        .question-card {
-            background: var(--q-bg); padding: 20px; border-radius: 15px; border: 1px solid #c8e6c9;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.02); min-height: 200px;
-        }
-        #qText { font-size: 18px; font-weight: 600; line-height: 1.5; margin-bottom: 20px; }
+        .question-card { background: var(--q-bg); padding: 20px; border-radius: 18px; border: 1px solid #c8e6c9; min-height: 180px; }
+        #qText { font-size: 18px; font-weight: 600; line-height: 1.4; color: #1b5e20; }
+        
+        .options-list { margin-top: 20px; }
+        .option { background: rgba(255,255,255,0.6); padding: 15px; border-radius: 12px; margin-bottom: 10px; border: 2px solid transparent; transition: 0.2s; font-size: 16px; }
+        .option.selected { border-color: var(--primary); background: white; font-weight: bold; }
 
-        .option {
-            background: rgba(255,255,255,0.7); padding: 15px; border-radius: 10px; margin-bottom: 10px;
-            border: 2px solid transparent; cursor: pointer; transition: 0.2s; font-weight: 500;
-        }
-        .option.selected { border-color: var(--primary); background: white; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        /* Nav & Bottom */
+        .nav-bar { display: flex; gap: 10px; padding: 15px; position: fixed; bottom: 0; left: 0; right: 0; background: white; box-shadow: 0 -4px 10px rgba(0,0,0,0.05); }
+        .btn { flex: 1; padding: 14px; border-radius: 12px; border: none; font-weight: bold; font-size: 16px; cursor: pointer; }
+        .btn-prev { background: #eee; color: #555; }
+        .btn-next { background: var(--primary); color: white; }
+        .btn-finish { background: var(--success); color: white; padding: 8px 15px; border-radius: 8px; border: none; font-weight: bold; }
 
-        /* --- NAV --- */
-        .nav-btns { display: flex; gap: 10px; margin-top: 15px; }
-        .btn-nav { flex: 1; padding: 15px; border-radius: 12px; border: 1px solid var(--primary); background: white; color: var(--primary); font-weight: bold; }
+        /* Result Page */
+        #resultPage { display: none; position: fixed; inset: 0; background: white; z-index: 1000; padding: 30px; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+        .res-badge { font-size: 100px; margin-bottom: 10px; }
 
-        /* --- RESULT OVERLAY --- */
-        #resultPage {
-            display: none; position: fixed; inset: 0; background: white; z-index: 1000; padding: 30px;
-            flex-direction: column; align-items: center; justify-content: center; text-align: center;
-        }
-        .res-icon { font-size: 80px; margin-bottom: 20px; }
+        /* Loading Screen */
+        #loader { position: fixed; inset: 0; background: white; display: flex; align-items: center; justify-content: center; z-index: 2000; font-weight: bold; color: var(--primary); }
     </style>
 </head>
 <body>
-    <div class="watermark">RASH_TEKSHIRUV</div>
+    <div id="loader">Yuklanmoqda...</div>
+    <div class="watermark">RASH_TEKSHIRUV KANALI</div>
+
     <div class="header">
-        <div id="userName">Yuklanmoqda...</div>
-        <div id="timer" class="timer-box t-blue">00:00</div>
-        <button class="btn-finish" onclick="finishConfirm()">Yakunlash</button>
+        <div class="user-block">
+            <div id="userName">Foydalanuvchi</div>
+            <div class="sub-text">Test savollari</div>
+        </div>
+        <div id="timer" class="timer-box t-blue">00:00:00</div>
+        <button class="btn-finish" onclick="askFinish()">Yakunlash</button>
     </div>
 
-    <div class="matrix-container">
-        <div class="matrix-grid" id="matrix"></div>
-    </div>
+    <div class="matrix-grid" id="matrix"></div>
 
-    <div class="container" id="quizPage">
+    <div class="container" id="quizUI">
         <div class="question-card">
-            <div id="qText">Yuklanmoqda...</div>
-            <div id="options"></div>
+            <div id="qText">Savol yuklanmoqda...</div>
+            <div class="options-list" id="options"></div>
         </div>
-        <div class="nav-btns">
-            <button class="btn-nav" onclick="prevQ()">⬅️ Oldingi</button>
-            <button class="btn-nav" onclick="nextQ()">Keyingi ➡️</button>
-        </div>
+    </div>
+
+    <div class="nav-bar" id="navBar">
+        <button class="btn btn-prev" onclick="move(-1)">⬅️ Oldingi</button>
+        <button class="btn btn-next" onclick="move(1)">Keyingi ➡️</button>
     </div>
 
     <div id="resultPage">
-        <div class="res-icon">🏆</div>
-        <h2 id="resTitle">Ajoyib natija!</h2>
-        <p id="resDetails" style="font-size: 20px;"></p>
-        <p id="resMsg" style="color: #666; margin: 20px 0;"></p>
-        <div style="background: #f1f5f9; padding: 15px; border-radius: 10px; font-size: 14px;">
-            🤖 Xatolarni tahlil qilish va qaysi mavzularda oqsashni bilish uchun <b>AI yordamchisiga</b> murojaat qiling!
+        <div class="res-badge">🎊</div>
+        <h1 id="resScore">0 / 0</h1>
+        <h2 id="resPercent">0%</h2>
+        <p id="resMotivation" style="font-size: 18px; color: #555; margin: 20px 0;"></p>
+        <div style="background: #fdf2f2; padding: 15px; border-radius: 12px; font-size: 14px; border: 1px solid #fee2e2;">
+            💡 Xatolarni to'g'rilash va qaysi yo'nalishda xato qilganingizni tushunish uchun <b>AI yordamchisiga</b> murojaat qiling.
         </div>
-        <button class="btn-finish" style="margin-top:20px; width:100%" onclick="closeApp()">Botga qaytish</button>
+        <button class="btn btn-next" style="margin-top: 30px; width: 100%;" onclick="tg.close()">Botga qaytish</button>
     </div>
 
     <script>
         let tg = window.Telegram.WebApp;
         tg.expand();
+        tg.ready(); // WebApp tayyorligini bildirish (ochilishni tezlashtiradi)
 
         let currentIdx = 0;
         let questions = [];
         let answers = {};
-        let isFinished = false;
-        let timerSeconds = 0;
+        let isDone = false;
+        let timeLeft = 0;
 
         document.getElementById('userName').innerText = tg.initDataUnsafe.user?.first_name || "O'quvchi";
 
@@ -127,92 +116,95 @@
         const fileName = urlParams.get('file');
 
         if(fileName) {
-            fetch(fileName).then(r => r.json()).then(data => {
-                questions = data;
-                timerSeconds = questions.length * 60;
-                startTimer();
-                updateUI();
-            }).catch(() => document.getElementById('qText').innerText = "Testni yuklashda xato!");
+            fetch(fileName)
+                .then(r => r.json())
+                .then(data => {
+                    questions = data;
+                    timeLeft = questions.length * 60;
+                    document.getElementById('loader').style.display = 'none';
+                    startTimer();
+                    updateUI();
+                })
+                .catch(() => { document.getElementById('loader').innerText = "Xato: Fayl topilmadi!"; });
         }
 
         function updateUI() {
-            if(questions.length === 0) return;
+            if(!questions.length) return;
             const q = questions[currentIdx];
             document.getElementById('qText').innerText = q.t;
             
-            const optCont = document.getElementById('options');
-            optCont.innerHTML = '';
+            const optDiv = document.getElementById('options');
+            optDiv.innerHTML = '';
             ['a','b','c','d'].forEach(k => {
-                const div = document.createElement('div');
-                div.className = `option ${answers[currentIdx] === k.toUpperCase() ? 'selected' : ''}`;
-                div.innerText = `${k.toUpperCase()}) ${q[k]}`;
-                div.onclick = () => { if(!isFinished) { answers[currentIdx] = k.toUpperCase(); updateUI(); } };
-                optCont.appendChild(div);
+                const item = document.createElement('div');
+                item.className = `option ${answers[currentIdx] === k.toUpperCase() ? 'selected' : ''}`;
+                item.innerText = `${k.toUpperCase()}) ${q[k]}`;
+                item.onclick = () => { if(!isDone) { answers[currentIdx] = k.toUpperCase(); updateUI(); } };
+                optDiv.appendChild(item);
             });
             renderMatrix();
         }
 
         function renderMatrix() {
-            const cont = document.getElementById('matrix');
-            cont.innerHTML = '';
+            const m = document.getElementById('matrix');
+            m.innerHTML = '';
             questions.forEach((_, i) => {
                 const btn = document.createElement('div');
                 btn.className = `matrix-item ${i === currentIdx ? 'active' : ''}`;
-                if(isFinished) {
-                    const isCorrect = answers[i] === questions[i].ans;
-                    btn.classList.add(isCorrect ? 'done' : 'wrong');
+                if(isDone) {
+                    btn.classList.add(answers[i] === questions[i].ans ? 'done' : 'wrong');
                 } else if(answers[i]) {
                     btn.classList.add('done');
                 }
                 btn.innerText = i + 1;
-                btn.onclick = () => {
-                    if(isFinished) {
-                        alert(`Savol #${i+1} haqida e'tiroz bildirish: [Foydalanuvchi xabari botga yuboriladi]`);
-                        // Bu yerda tg.sendData orqali botga e'tiroz yuborish mumkin
-                    }
-                    currentIdx = i; updateUI();
+                btn.onclick = () => { 
+                    if(isDone) tg.showAlert(`Savol #${i+1} haqida e'tiroz bildirish tizimi tez kunda ishga tushadi.`);
+                    currentIdx = i; updateUI(); 
                 };
-                cont.appendChild(btn);
+                m.appendChild(btn);
             });
         }
 
-        function nextQ() { if(currentIdx < questions.length-1) { currentIdx++; updateUI(); } }
-        function prevQ() { if(currentIdx > 0) { currentIdx--; updateUI(); } }
-
-        function startTimer() {
-            const tDiv = document.getElementById('timer');
-            const total = timerSeconds;
-            const interval = setInterval(() => {
-                if(timerSeconds <= 0 || isFinished) { clearInterval(interval); if(!isFinished) finishTest(); return; }
-                timerSeconds--;
-                const h = Math.floor(timerSeconds/3600);
-                const m = Math.floor((timerSeconds%3600)/60);
-                const s = timerSeconds%60;
-                tDiv.innerText = `${h}:${m < 10 ? '0'+m : m}:${s < 10 ? '0'+s : s}`;
-                
-                const p = (timerSeconds/total) * 100;
-                tDiv.className = 'timer-box ' + (p > 50 ? 't-blue' : (p > 20 ? 't-yellow' : 't-red'));
-            }, 1000);
-        }
-
-        function finishConfirm() { if(confirm("Testni yakunlashni tasdiqlaysizmi?")) finishTest(); }
-
-        function finishTest() {
-            isFinished = true;
-            let score = 0;
-            questions.forEach((q, i) => { if(answers[i] === q.ans) score++; });
-            const percent = Math.round((score/questions.length)*100);
-            
-            document.getElementById('quizPage').style.display = 'none';
-            document.getElementById('resultPage').style.display = 'flex';
-            document.getElementById('resDetails').innerText = `${score} / ${questions.length} (${percent}%)`;
-            document.getElementById('resMsg').innerText = percent > 70 ? "Barakalla! Siz juda yaxshi natija ko'rsatdingiz!" : "Yana biroz harakat qilsangiz, albatta uddalaysiz!";
-            
-            tg.sendData(JSON.stringify({score, total: questions.length, percent}));
+        function move(step) {
+            currentIdx = Math.max(0, Math.min(questions.length - 1, currentIdx + step));
             updateUI();
         }
 
-        function closeApp() { tg.close(); }
+        function startTimer() {
+            const tBox = document.getElementById('timer');
+            const full = timeLeft;
+            const timer = setInterval(() => {
+                if(timeLeft <= 0 || isDone) { clearInterval(timer); if(!isDone) finalize(); return; }
+                timeLeft--;
+                let h = Math.floor(timeLeft/3600);
+                let m = Math.floor((timeLeft%3600)/60);
+                let s = timeLeft%60;
+                tBox.innerText = `${h}:${m<10?'0'+m:m}:${s<10?'0'+s:s}`;
+                
+                let p = (timeLeft/full)*100;
+                tBox.className = `timer-box ${p > 50 ? 't-blue' : (p > 20 ? 't-yellow' : 't-red')}`;
+            }, 1000);
+        }
+
+        function askFinish() { if(confirm("Testni yakunlaysizmi?")) finalize(); }
+
+        function finalize() {
+            isDone = true;
+            let score = 0;
+            questions.forEach((q, i) => { if(answers[i] === q.ans) score++; });
+            let p = Math.round((score/questions.length)*100);
+            
+            document.getElementById('quizUI').style.display = 'none';
+            document.getElementById('navBar').style.display = 'none';
+            document.getElementById('resultPage').style.display = 'flex';
+            
+            document.getElementById('resScore').innerText = `${score} / ${questions.length}`;
+            document.getElementById('resPercent').innerText = `${p}%`;
+            document.getElementById('resMotivation').innerText = p >= 70 ? "Siz juda aqllisiz! Ajoyib natija!" : "Hali ko'p narsaga qodirsiz, yana bir urinib ko'ring!";
+            
+            tg.sendData(JSON.stringify({score, total: questions.length, percent: p}));
+            updateUI();
+        }
     </script>
 </body>
 </html>
