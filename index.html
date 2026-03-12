@@ -177,37 +177,56 @@
         }
 
         function finalize() {
-            isDone = true;
-            let score = 0;
-            let wrongs = [];
-            questions.forEach((q, i) => { 
-                if(answers[i] === q.ans) score++;
-                else wrongs.push({q: q.t, user: answers[i] || "Yo'q", correct: q.ans});
-            });
+    isDone = true;
+    let score = 0;
+    let wrongs = [];
+    questions.forEach((q, i) => { 
+        if(answers[i] === q.ans) score++;
+        else wrongs.push({q: q.t, user: answers[i] || "Yo'q", correct: q.ans});
+    });
 
-            let p = Math.round((score/questions.length)*100);
-            
-            // Natija oynasini ko'rsatish
-            document.getElementById('resultOverlay').style.display = 'flex';
-            document.getElementById('resPercent').innerText = `${p}%`;
-            document.getElementById('resScore').innerText = `Natija: ${score} / ${questions.length}`;
-            document.getElementById('resMotivation').innerText = p >= 70 ? "Barakalla! Zo'r natija!" : "Yana ozroq harakat qiling! 😊";
-            
-            window.finalData = {
-                score: score, total: questions.length, percent: p,
-                subject: fileName.split('.')[0], wrong_answers: wrongs
-            };
-            updateUI(); // Orqa fondagi savollarni rangli qilib qo'yadi
-        }
+    let p = Math.round((score/questions.length)*100);
+    
+    // Global o'zgaruvchiga saqlash
+    window.finalData = {
+        score: score,
+        total: questions.length,
+        percent: p,
+        subject: fileName ? fileName.split('.')[0] : "Noma'lum",
+        wrong_answers: wrongs
+    };
 
+    document.getElementById('resultOverlay').style.display = 'flex';
+    document.getElementById('resPercent').innerText = `${p}%`;
+    document.getElementById('resScore').innerText = `Natija: ${score} / ${questions.length}`;
+    document.getElementById('resMotivation').innerText = p >= 70 ? "Barakalla!" : "Yana ozroq harakat qiling!";
+    
+    updateUI(); 
+}
         function closeOverlay() {
             document.getElementById('resultOverlay').style.display = 'none';
         }
 
         function sendToBot() {
-            tg.sendData(JSON.stringify(window.finalData));
+    // Ma'lumot borligini tekshiramiz
+    if (!window.finalData) {
+        // Agar finalize ishlamay qolgan bo'lsa, qayta hisoblaymiz
+        finalize();
+    }
+
+    // Telegramga ma'lumotni yuborish
+    try {
+        const dataStr = JSON.stringify(window.finalData);
+        tg.sendData(dataStr);
+        
+        // Bir oz kutib keyin yopish (Telegram ba'zan ma'lumotni qabul qilib ulgurishi kerak)
+        setTimeout(() => {
             tg.close();
-        }
+        }, 100);
+    } catch (e) {
+        alert("Xatolik yuz berdi: " + e.message);
+    }
+}
 
         function startTimer() {
             const t = setInterval(() => {
@@ -224,3 +243,4 @@
     </script>
 </body>
 </html>
+
