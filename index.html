@@ -13,66 +13,67 @@
             --primary: #0088cc;
             --success: #22c55e;
             --error: #ef4444;
-            --blue: #3b82f6;
         }
 
-        body { 
-            font-family: -apple-system, sans-serif; 
-            background: var(--bg); margin: 0; padding: 0; user-select: none; 
-        }
+        body { font-family: sans-serif; background: var(--bg); margin: 0; padding: 0; user-select: none; }
 
+        /* HEADER */
         .header { 
             background: white; padding: 10px 15px; display: flex; 
             justify-content: space-between; align-items: center; 
             box-shadow: 0 2px 8px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 100; 
         }
-        
-        /* Savol raqamlari - 5 qatorda */
+
+        /* MATRIX - 5 QATORLI GRID */
         .matrix-grid { 
             display: grid;
-            grid-template-columns: repeat(5, 1fr); /* 5 ta ustun */
-            gap: 5px; padding: 10px; background: white; 
-            max-height: 150px; overflow-y: auto; border-bottom: 1px solid #eee;
+            grid-template-columns: repeat(5, 1fr); 
+            gap: 8px; padding: 15px; background: white; 
+            border-bottom: 1px solid #eee;
+            max-height: 180px; overflow-y: auto;
         }
         .matrix-item { 
-            height: 30px; border-radius: 6px; background: #f1f5f9; 
+            height: 35px; border-radius: 8px; background: #f1f5f9; 
             display: flex; align-items: center; justify-content: center; 
-            font-weight: bold; font-size: 12px; cursor: pointer;
+            font-weight: bold; cursor: pointer; transition: 0.2s;
         }
         .matrix-item.active { border: 2px solid var(--primary); background: #e0f2fe; }
+        
+        /* TESTDAN KEYINGI RANGLLAR */
         .matrix-item.done { background: var(--success) !important; color: white; }
         .matrix-item.wrong { background: var(--error) !important; color: white; }
 
-        .container { padding: 15px; padding-bottom: 120px; }
+        /* SAVOL KARTASI */
+        .container { padding: 15px; padding-bottom: 140px; }
         .question-card { background: var(--q-bg); padding: 20px; border-radius: 15px; border: 1px solid #bdf0cc; margin-bottom: 10px; }
-        #qText { font-size: 17px; font-weight: 700; color: var(--q-text); }
         
         .option { 
-            background: white; padding: 14px; border-radius: 10px; margin-top: 8px; 
-            border: 2px solid transparent; transition: 0.2s; font-size: 15px; 
+            background: white; padding: 15px; border-radius: 12px; margin-top: 10px; 
+            border: 2px solid transparent; transition: 0.2s;
         }
         .option.selected { border-color: var(--primary); background: #f0f9ff; }
         
-        /* Natija ranglari */
-        .option.correct-result { border-color: var(--success) !important; background: #f0fdf4 !important; color: #166534; font-weight: bold; }
-        .option.wrong-result { border-color: var(--error) !important; background: #fef2f2 !important; color: #991b1b; }
+        /* TAHLIL RANGLLARI */
+        .option.correct-result { border-color: var(--success) !important; background: #f0fdf4 !important; font-weight: bold; }
+        .option.wrong-result { border-color: var(--error) !important; background: #fef2f2 !important; }
 
         .nav-bar { 
             display: flex; gap: 10px; padding: 10px 15px; position: fixed; 
-            bottom: 30px; left: 0; right: 0; background: white; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); 
+            bottom: 35px; left: 0; right: 0; background: white; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); 
         }
-        .btn-nav { flex: 1; padding: 12px; border-radius: 10px; border: 1px solid #e2e8f0; font-weight: bold; }
+        .btn-nav { flex: 1; padding: 12px; border-radius: 10px; border: 1px solid #e2e8f0; font-weight: bold; background: white; }
         .btn-next { background: var(--primary); color: white; border: none; }
 
-        /* Reklama satri */
+        /* REKLAMA MARQUEE */
         .footer-ads {
-            position: fixed; bottom: 0; width: 100%; background: #1e293b;
-            color: white; font-size: 12px; padding: 5px 0; z-index: 200;
+            position: fixed; bottom: 0; width: 100%; background: #0f172a;
+            color: #38bdf8; font-size: 13px; padding: 6px 0; z-index: 200; font-weight: bold;
         }
 
+        /* NATIJA SAHIFASI */
         #resultPage { 
             display: none; position: fixed; inset: 0; background: white; z-index: 1000; 
-            flex-direction: column; align-items: center; justify-content: center; padding: 20px; text-align: center; 
+            flex-direction: column; align-items: center; justify-content: center; padding: 25px; text-align: center; 
         }
 
         #loader { position: fixed; inset: 0; background: white; display: flex; align-items: center; justify-content: center; z-index: 2000; }
@@ -83,15 +84,15 @@
 
     <div class="header">
         <div id="userName" style="font-weight: 800;">Foydalanuvchi</div>
-        <div id="timer" style="font-family: monospace; font-weight: bold; background: #333; color: white; padding: 5px 10px; border-radius: 8px;">00:00</div>
-        <button onclick="askFinish()" style="background:var(--error); color:white; border:none; padding:8px 12px; border-radius:10px; font-weight: bold;">Tugatish</button>
+        <div id="timer" style="font-family: monospace; font-weight: bold;">00:00</div>
+        <button onclick="askFinish()" style="background:var(--error); color:white; border:none; padding:8px 12px; border-radius:8px;">Tugatish</button>
     </div>
 
     <div class="matrix-grid" id="matrix"></div>
 
     <div class="container" id="quizUI">
         <div class="question-card">
-            <div id="qText">Yuklanmoqda...</div>
+            <div id="qText">Savol...</div>
             <div id="options"></div>
         </div>
         <div class="nav-bar">
@@ -101,19 +102,15 @@
     </div>
 
     <div id="resultPage">
-        <div id="resIcon" style="font-size: 50px;">🏆</div>
-        <div id="resScore" style="font-size: 20px; font-weight: 800;">0 / 0</div>
-        <div id="resPercent" style="font-size: 40px; font-weight: 900; color: var(--primary);">0%</div>
-        <div id="resMotivation" style="margin: 10px; font-weight: 600; color: #475569;"></div>
-        
-        <button onclick="sendToBot()" style="background:var(--primary); color:white; border:none; padding:15px; border-radius:12px; width:100%; font-weight:bold;">Natijani saqlash va Botga qaytish</button>
-        <p style="font-size: 12px; color: #64748b; margin-top: 15px;">Yuqoridagi raqamlarni bosib barcha xato va to'g'ri javoblaringizni tekshirib chiqishingiz mumkin.</p>
+        <h1 id="resIcon" style="font-size: 60px; margin:0;">🏆</h1>
+        <h2 id="resPercent" style="font-size: 50px; color: var(--primary); margin:10px 0;">0%</h2>
+        <p id="resScore" style="font-size: 18px; font-weight: bold;">0 / 0</p>
+        <p id="resMotivation" style="font-style: italic; color: #64748b;"></p>
+        <button onclick="sendToBot()" style="background:var(--success); color:white; border:none; padding:15px; border-radius:12px; width:100%; font-weight:bold; margin-top:20px;">Natijani yuborish va Tahlil qilish</button>
     </div>
 
     <div class="footer-ads">
-        <marquee behavior="scroll" direction="left">
-            🚀 @IshtixonKimyo - Kimyo fanidan eng sara testlar va darslar! ⚡️ RASH tekshiruv platformasi - Bilimingizni biz bilan sinang! 🔬
-        </marquee>
+        <marquee>🚀 @IshtixonKimyo — Kimyo fani bo'yicha eng sara testlar! ⚡ RASH TEKSHIRUV PLATFORMASI ⚡</marquee>
     </div>
 
     <script>
@@ -128,7 +125,7 @@
             .then(r => r.json())
             .then(data => {
                 questions = data;
-                timeLeft = questions.length * 60;
+                timeLeft = questions.length * 60; // Har bir savolga 60 soniya
                 document.getElementById('loader').style.display = 'none';
                 startTimer();
                 updateUI();
@@ -136,7 +133,7 @@
 
         function updateUI() {
             const q = questions[currentIdx];
-            document.getElementById('qText').innerText = `${currentIdx+1}. ${q.t}`;
+            document.getElementById('qText').innerHTML = `<b>${currentIdx+1}.</b> ${q.t}`;
             const optDiv = document.getElementById('options');
             optDiv.innerHTML = '';
             
@@ -146,9 +143,10 @@
                 const item = document.createElement('div');
                 item.className = "option";
                 
+                // TAHLIL REJIMI (Test tugagach)
                 if(isDone) {
-                    if(keyUpper === q.ans) item.classList.add("correct-result");
-                    else if(answers[currentIdx] === keyUpper) item.classList.add("wrong-result");
+                    if(keyUpper === q.ans) item.classList.add("correct-result"); // To'g'ri javob yashil
+                    else if(answers[currentIdx] === keyUpper) item.classList.add("wrong-result"); // Xato javob qizil
                 } else if(answers[currentIdx] === keyUpper) {
                     item.classList.add("selected");
                 }
@@ -163,75 +161,69 @@
         function renderMatrix() {
             const m = document.getElementById('matrix');
             m.innerHTML = '';
-            questions.forEach((_, i) => {
+            questions.forEach((q, i) => {
                 const btn = document.createElement('div');
                 btn.className = `matrix-item ${i === currentIdx ? 'active' : ''}`;
+                
                 if(isDone) {
-                    btn.classList.add(answers[i] === questions[i].ans ? 'done' : 'wrong');
+                    btn.classList.add(answers[i] === q.ans ? 'done' : 'wrong');
                 } else if(answers[i]) {
                     btn.classList.add('done');
                 }
+                
                 btn.innerText = i + 1;
                 btn.onclick = () => { currentIdx = i; updateUI(); };
                 m.appendChild(btn);
             });
         }
 
-        function startTimer() {
-            const timer = setInterval(() => {
-                if(timeLeft <= 0 || isDone) { clearInterval(timer); if(!isDone) finalize(); return; }
-                timeLeft--;
-                let m = Math.floor(timeLeft/60), s = timeLeft%60;
-                document.getElementById('timer').innerText = `${m}:${s<10?'0'+s:s}`;
-            }, 1000);
-        }
-
-        function move(s) { currentIdx = Math.max(0, Math.min(questions.length-1, currentIdx+s)); updateUI(); }
-        function askFinish() { tg.showConfirm("Testni yakunlaysizmi?", (ok) => { if(ok) finalize(); }); }
-
         function finalize() {
             isDone = true;
             let score = 0;
             let wrongs = [];
             questions.forEach((q, i) => { 
-                if(answers[i] === q.ans) {
-                    score++;
-                } else {
-                    wrongs.push({ q: q.t, user: answers[i] || "Yo'q", correct: q.ans });
-                }
+                if(answers[i] === q.ans) score++;
+                else wrongs.push({q: q.t, user: answers[i] || "Yo'q", correct: q.ans});
             });
 
             let p = Math.round((score/questions.length)*100);
             
-            // Motivatsion so'zlar
-            let moti = "";
-            let icon = "🎊";
-            if(p === 100) { moti = "DAHO! Mukammal natija! 🚀"; icon = "👑"; }
-            else if(p >= 80) { moti = "Ajoyib! Siz judayam kuchlisiz! 💪"; }
-            else if(p >= 60) { moti = "Yaxshi, lekin yana ozroq harakat kerak! 😊"; icon = "📈"; }
-            else { moti = "Bo'shashmang, xatolaringiz ustida ishlang! 📚"; icon = "👨‍💻"; }
+            // MOTIVATSIYA
+            let moti = p >= 90 ? "Ajoyib natija! Siz kimsiz o'zi? 🔥" : 
+                       p >= 70 ? "Yaxshi! Yana ozroq harakat qilsangiz, marra sizniki! 💪" : 
+                       "Yomon emas, lekin ko'proq o'qishingiz kerak. 😊";
 
             document.getElementById('quizUI').style.display = 'none';
             document.getElementById('resultPage').style.display = 'flex';
-            document.getElementById('resIcon').innerText = icon;
-            document.getElementById('resScore').innerText = `Natija: ${score} / ${questions.length}`;
             document.getElementById('resPercent').innerText = `${p}%`;
+            document.getElementById('resScore').innerText = `Natija: ${score} / ${questions.length}`;
             document.getElementById('resMotivation').innerText = moti;
             
             window.finalData = {
-                score: score,
-                total: questions.length,
-                percent: p,
-                subject: fileName.split('.')[0].replace(/_/g, ' '),
-                wrong_answers: wrongs
+                score: score, total: questions.length, percent: p,
+                subject: fileName.split('.')[0], wrong_answers: wrongs
             };
-            updateUI(); // Natijalarni ko'rsatish uchun UI ni yangilash
         }
 
         function sendToBot() {
             tg.sendData(JSON.stringify(window.finalData));
-            tg.close();
+            // Tahlil rejimiga qaytish
+            document.getElementById('resultPage').style.display = 'none';
+            document.getElementById('quizUI').style.display = 'block';
+            updateUI();
         }
+
+        function startTimer() {
+            setInterval(() => {
+                if(timeLeft > 0 && !isDone) {
+                    timeLeft--;
+                    let m = Math.floor(timeLeft/60), s = timeLeft%60;
+                    document.getElementById('timer').innerText = `${m}:${s<10?'0'+s:s}`;
+                } else if(timeLeft === 0 && !isDone) { finalize(); }
+            }, 1000);
+        }
+        function move(s) { currentIdx = Math.max(0, Math.min(questions.length-1, currentIdx+s)); updateUI(); }
+        function askFinish() { tg.showConfirm("Testni yakunlaysizmi?", (ok) => { if(ok) finalize(); }); }
     </script>
 </body>
 </html>
