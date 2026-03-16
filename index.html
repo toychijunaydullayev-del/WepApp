@@ -70,6 +70,12 @@
             display: none; position: fixed; inset: 0; background: rgba(255,255,255,0.95); 
             z-index: 1000; flex-direction: column; align-items: center; justify-content: center; padding: 25px; text-align: center; 
         }
+        /* Rasm uchun stil */
+.q-image { width: 100%; max-height: 250px; object-fit: contain; border-radius: 10px; margin: 10px 0; background: white; }
+
+/* Yopiq savol inputi */
+.input-ans { width: 100%; padding: 15px; border-radius: 12px; border: 2px solid #ddd; font-size: 16px; box-sizing: border-box; margin-top: 10px; }
+.input-ans:focus { border-color: var(--primary); outline: none; }
 
         #loader { position: fixed; inset: 0; background: white; display: flex; align-items: center; justify-content: center; z-index: 2000; }
     </style>
@@ -88,6 +94,7 @@
     <div class="container" id="quizUI">
         <div class="question-card">
             <div id="qText">Savol...</div>
+            <div id="qMedia"></div> <div id="options"></div>
             <div id="options"></div>
         </div>
         <div class="nav-bar">
@@ -131,31 +138,55 @@
             });
 
         function updateUI() {
-            const q = questions[currentIdx];
-            document.getElementById('qText').innerHTML = `<b>${currentIdx+1}.</b> ${q.t}`;
-            const optDiv = document.getElementById('options');
-            optDiv.innerHTML = '';
-            
-            ['a','b','c','d'].forEach(k => {
-                if(!q[k]) return;
-                const keyUpper = k.toUpperCase();
-                const item = document.createElement('div');
-                item.className = "option";
-                
-                if(isDone) {
-                    // Test tugagan bo'lsa ranglar:
-                    if(keyUpper === q.ans) item.classList.add("correct-result"); 
-                    else if(answers[currentIdx] === keyUpper) item.classList.add("wrong-result");
-                } else if(answers[currentIdx] === keyUpper) {
-                    item.classList.add("selected");
-                }
-                
-                item.innerText = `${keyUpper}) ${q[k]}`;
-                item.onclick = () => { if(!isDone) { answers[currentIdx] = keyUpper; updateUI(); } };
-                optDiv.appendChild(item);
-            });
-            renderMatrix();
+    const q = questions[currentIdx];
+    // Savol matni (q.t o'rniga q.q bo'ldi, chunki Excel kodi shunday)
+    document.getElementById('qText').innerHTML = `<b>${currentIdx+1}.</b> ${q.q}`;
+    
+    // 1. Rasm ko'rsatish
+    const mediaDiv = document.getElementById('qMedia');
+    mediaDiv.innerHTML = q.image ? `<img src="${q.image}" class="q-image">` : '';
+
+    const optDiv = document.getElementById('options');
+    optDiv.innerHTML = '';
+
+    // 2. Savol turi bo'yicha shart
+    if(q.type === 'yopiq') {
+        const input = document.createElement('input');
+        input.className = "input-ans";
+        input.placeholder = "Javobingizni yozing...";
+        input.value = answers[currentIdx] || '';
+        input.disabled = isDone;
+        
+        if(isDone) {
+            const isCorrect = input.value.trim().toLowerCase() === q.correct.toLowerCase();
+            input.style.borderColor = isCorrect ? 'var(--success)' : 'var(--error)';
+            const feedback = document.createElement('p');
+            feedback.innerHTML = `To'g'ri javob: <b>${q.correct}</b>`;
+            optDiv.appendChild(input);
+            optDiv.appendChild(feedback);
+        } else {
+            input.oninput = (e) => { answers[currentIdx] = e.target.value; renderMatrix(); };
+            optDiv.appendChild(input);
         }
+    } else {
+        // Variantli savollar (q.options dan o'qiydi)
+        q.options.forEach((val, idx) => {
+            if(!val) return;
+            const item = document.createElement('div');
+            item.className = "option";
+            if(isDone) {
+                if(val === q.correct) item.classList.add("correct-result");
+                else if(answers[currentIdx] === val) item.classList.add("wrong-result");
+            } else if(answers[currentIdx] === val) {
+                item.classList.add("selected");
+            }
+            item.innerText = val;
+            item.onclick = () => { if(!isDone) { answers[currentIdx] = val; updateUI(); } };
+            optDiv.appendChild(item);
+        });
+    }
+    renderMatrix();
+}
 
         function renderMatrix() {
             const m = document.getElementById('matrix');
@@ -179,29 +210,25 @@
         function finalize() {
     isDone = true;
     let score = 0;
-    let wrongs = [];
-    questions.forEach((q, i) => { 
-        if(answers[i] === q.ans) score++;
-        else wrongs.push({q: q.t, user: answers[i] || "Yo'q", correct: q.ans});
+    questions.forEach((q, i) => {
+        const userAns = (answers[i] || "").toString().trim().toLowerCase();
+        const correctAns = q.correct.toString().trim().toLowerCase();
+        if(userAns === correctAns) score++;
     });
 
     let p = Math.round((score/questions.length)*100);
-    
-    // Global o'zgaruvchiga saqlash
-    window.finalData = {
-        score: score,
-        total: questions.length,
-        percent: p,
-        subject: fileName ? fileName.split('.')[0] : "Noma'lum",
-        wrong_answers: wrongs
+    // subject nomi uchun fayl nomini kesib olamiz
+    window.finalData = { 
+        score, 
+        total: questions.length, 
+        percent: p, 
+        subject: fileName ? fileName.split('_')[0] : "Test" 
     };
 
     document.getElementById('resultOverlay').style.display = 'flex';
     document.getElementById('resPercent').innerText = `${p}%`;
-    document.getElementById('resScore').innerText = `Natija: ${score} / ${questions.length}`;
-    document.getElementById('resMotivation').innerText = p >= 70 ? "Barakalla!" : "Yana ozroq harakat qiling!";
-    
-    updateUI(); 
+    document.getElementById('resScore').innerText = `${score} / ${questions.length}`;
+    updateUI();
 }
         function closeOverlay() {
             document.getElementById('resultOverlay').style.display = 'none';
