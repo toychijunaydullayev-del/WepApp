@@ -176,22 +176,28 @@
                 const opts = q.options || [q.a, q.b, q.c, q.d];
                 const correctAns = q.correct || q.ans;
 
-                opts.forEach((val) => {
-                    if(!val) return;
-                    const item = document.createElement('div');
-                    item.className = "option";
-                    
-                    if(isDone) {
-                        if(val === correctAns) item.classList.add("correct-result");
-                        else if(answers[currentIdx] === val) item.classList.add("wrong-result");
-                    } else if(answers[currentIdx] === val) {
-                        item.classList.add("selected");
-                    }
-                    
-                    item.innerText = val;
-                    item.onclick = () => { if(!isDone) { answers[currentIdx] = val; updateUI(); } };
-                    optDiv.appendChild(item);
-                });
+                q.options.forEach((val) => {
+    if(!val) return;
+    const item = document.createElement('div');
+    item.className = "option";
+    
+    const currentCorrect = (q.correct || q.ans || "").toString().trim();
+    const currentUserAns = (answers[currentIdx] || "").toString().trim();
+
+    if(isDone) {
+        if(val.toString().trim() === currentCorrect) {
+            item.classList.add("correct-result"); // To'g'ri javob - yashil
+        } else if(val.toString().trim() === currentUserAns) {
+            item.classList.add("wrong-result"); // Xato tanlangan javob - qizil
+        }
+    } else if(currentUserAns === val.toString().trim()) {
+        item.classList.add("selected");
+    }
+    
+    item.innerText = val;
+    item.onclick = () => { if(!isDone) { answers[currentIdx] = val; updateUI(); } };
+    optDiv.appendChild(item);
+});
             }
             renderMatrix();
         }
@@ -221,26 +227,33 @@
         }
 
         function finalize() {
-            isDone = true;
-            let score = 0;
-            questions.forEach((q, i) => {
-                const correctAns = q.correct || q.ans;
-                const userAns = (answers[i] || "").toString().trim().toLowerCase();
-                if(userAns === correctAns.toString().trim().toLowerCase()) score++;
-            });
-
-            let p = Math.round((score/questions.length)*100);
-            window.finalData = { 
-                score, total: questions.length, percent: p, 
-                subject: fileName ? fileName.split('_')[0] : "Test" 
-            };
-
-            document.getElementById('resultOverlay').style.display = 'flex';
-            document.getElementById('resPercent').innerText = `${p}%`;
-            document.getElementById('resScore').innerText = `${score} / ${questions.length}`;
-            document.getElementById('resMotivation').innerText = p >= 70 ? "Barakalla!" : "Yana ozroq harakat qiling!";
-            updateUI();
+    isDone = true;
+    let score = 0;
+    
+    questions.forEach((q, i) => {
+        const correctAns = (q.correct || q.ans || "").toString().trim().toLowerCase();
+        const userAns = (answers[i] || "").toString().trim().toLowerCase();
+        
+        if(userAns === correctAns && userAns !== "") {
+            score++;
         }
+    });
+
+    let p = Math.round((score / questions.length) * 100);
+    
+    // Natija obyekti
+    window.finalData = { 
+        score: score, 
+        total: questions.length, 
+        percent: p, 
+        subject: fileName ? fileName.split('_')[0] : "Test" 
+    };
+
+    document.getElementById('resultOverlay').style.display = 'flex';
+    document.getElementById('resPercent').innerText = `${p}%`;
+    document.getElementById('resScore').innerText = `${score} / ${questions.length}`;
+    updateUI(); // Ranglarni yangilash uchun
+}
 
         function sendToBot() {
             if (!window.finalData) finalize();
