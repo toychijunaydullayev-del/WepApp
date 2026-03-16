@@ -16,16 +16,12 @@
         }
 
         body { font-family: sans-serif; background: var(--bg); margin: 0; padding: 0; user-select: none; }
-
         .header { 
             background: white; padding: 12px 15px; display: flex; 
             justify-content: space-between; align-items: center; 
             box-shadow: 0 2px 8px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 100; 
         }
-
-        /* Foydalanuvchi nomi chap tomonda */
         #userName { font-weight: 800; color: #1e293b; font-size: 16px; }
-
         .matrix-grid { 
             display: grid; grid-template-columns: repeat(5, 1fr); 
             gap: 8px; padding: 15px; background: white; 
@@ -43,15 +39,18 @@
         .container { padding: 15px; padding-bottom: 140px; }
         .question-card { background: var(--q-bg); padding: 20px; border-radius: 15px; border: 1px solid #bdf0cc; margin-bottom: 10px; }
         
+        .q-image { width: 100%; max-height: 250px; object-fit: contain; border-radius: 10px; margin: 10px 0; background: white; display: block; }
+        
         .option { 
             background: white; padding: 15px; border-radius: 12px; margin-top: 10px; 
             border: 2px solid transparent; transition: 0.2s;
         }
         .option.selected { border-color: var(--primary); background: #f0f9ff; }
-        
-        /* Tahlil ranglari */
         .option.correct-result { border-color: var(--success) !important; background: #f0fdf4 !important; font-weight: bold; color: #166534; }
         .option.wrong-result { border-color: var(--error) !important; background: #fef2f2 !important; color: #991b1b; }
+
+        .input-ans { width: 100%; padding: 15px; border-radius: 12px; border: 2px solid #ddd; font-size: 16px; box-sizing: border-box; margin-top: 10px; }
+        .input-ans:focus { border-color: var(--primary); outline: none; }
 
         .nav-bar { 
             display: flex; gap: 10px; padding: 10px 15px; position: fixed; 
@@ -65,18 +64,10 @@
             color: #38bdf8; font-size: 13px; padding: 6px 0; z-index: 200; font-weight: bold;
         }
 
-        /* Natija oynasi */
         #resultOverlay { 
             display: none; position: fixed; inset: 0; background: rgba(255,255,255,0.95); 
             z-index: 1000; flex-direction: column; align-items: center; justify-content: center; padding: 25px; text-align: center; 
         }
-        /* Rasm uchun stil */
-.q-image { width: 100%; max-height: 250px; object-fit: contain; border-radius: 10px; margin: 10px 0; background: white; }
-
-/* Yopiq savol inputi */
-.input-ans { width: 100%; padding: 15px; border-radius: 12px; border: 2px solid #ddd; font-size: 16px; box-sizing: border-box; margin-top: 10px; }
-.input-ans:focus { border-color: var(--primary); outline: none; }
-
         #loader { position: fixed; inset: 0; background: white; display: flex; align-items: center; justify-content: center; z-index: 2000; }
     </style>
 </head>
@@ -94,7 +85,7 @@
     <div class="container" id="quizUI">
         <div class="question-card">
             <div id="qText">Savol...</div>
-            <div id="qMedia"></div> <div id="options"></div>
+            <div id="qMedia"></div> 
             <div id="options"></div>
         </div>
         <div class="nav-bar">
@@ -113,7 +104,7 @@
     </div>
 
     <div class="footer-ads">
-        <marquee>🚀 @IshtixonKimyo — Kimyo fani bo'yicha eng sara testlar! ⚡ RASH TEKSHIRUV PLATFORMASI ⚡</marquee>
+        <marquee>🚀 @IshtixonKimyo — Kimyo fani bo'yicha eng sara testlar! ⚡ RASH PLATFORMASI ⚡</marquee>
     </div>
 
     <script>
@@ -124,7 +115,6 @@
         const urlParams = new URLSearchParams(window.location.search);
         const fileName = urlParams.get('file');
 
-        // Foydalanuvchi nomini o'rnatish
         document.getElementById('userName').innerText = tg.initDataUnsafe.user?.first_name || "Foydalanuvchi";
 
         fetch(`./${fileName}?v=${Math.random()}`)
@@ -135,58 +125,68 @@
                 document.getElementById('loader').style.display = 'none';
                 startTimer();
                 updateUI();
+            }).catch(err => {
+                document.getElementById('loader').innerText = "Faylni yuklashda xatolik!";
             });
 
         function updateUI() {
-    const q = questions[currentIdx];
-    // Savol matni (q.t o'rniga q.q bo'ldi, chunki Excel kodi shunday)
-    document.getElementById('qText').innerHTML = `<b>${currentIdx+1}.</b> ${q.q}`;
-    
-    // 1. Rasm ko'rsatish
-    const mediaDiv = document.getElementById('qMedia');
-    mediaDiv.innerHTML = q.image ? `<img src="${q.image}" class="q-image">` : '';
+            const q = questions[currentIdx];
+            // Eskilari q.t, yangilari q.q - ikkalasini ham qo'llaymiz
+            const questionText = q.q || q.t || "Savol matni yo'q";
+            document.getElementById('qText').innerHTML = `<b>${currentIdx+1}.</b> ${questionText}`;
+            
+            // Rasm ko'rsatish
+            const mediaDiv = document.getElementById('qMedia');
+            mediaDiv.innerHTML = q.image ? `<img src="${q.image}" class="q-image">` : '';
 
-    const optDiv = document.getElementById('options');
-    optDiv.innerHTML = '';
+            const optDiv = document.getElementById('options');
+            optDiv.innerHTML = '';
 
-    // 2. Savol turi bo'yicha shart
-    if(q.type === 'yopiq') {
-        const input = document.createElement('input');
-        input.className = "input-ans";
-        input.placeholder = "Javobingizni yozing...";
-        input.value = answers[currentIdx] || '';
-        input.disabled = isDone;
-        
-        if(isDone) {
-            const isCorrect = input.value.trim().toLowerCase() === q.correct.toLowerCase();
-            input.style.borderColor = isCorrect ? 'var(--success)' : 'var(--error)';
-            const feedback = document.createElement('p');
-            feedback.innerHTML = `To'g'ri javob: <b>${q.correct}</b>`;
-            optDiv.appendChild(input);
-            optDiv.appendChild(feedback);
-        } else {
-            input.oninput = (e) => { answers[currentIdx] = e.target.value; renderMatrix(); };
-            optDiv.appendChild(input);
-        }
-    } else {
-        // Variantli savollar (q.options dan o'qiydi)
-        q.options.forEach((val, idx) => {
-            if(!val) return;
-            const item = document.createElement('div');
-            item.className = "option";
-            if(isDone) {
-                if(val === q.correct) item.classList.add("correct-result");
-                else if(answers[currentIdx] === val) item.classList.add("wrong-result");
-            } else if(answers[currentIdx] === val) {
-                item.classList.add("selected");
+            // Savol turi: Yopiq
+            if(q.type === 'yopiq') {
+                const input = document.createElement('input');
+                input.className = "input-ans";
+                input.placeholder = "Javobingizni yozing...";
+                input.value = answers[currentIdx] || '';
+                input.disabled = isDone;
+                
+                if(isDone) {
+                    const isCorrect = (answers[currentIdx] || "").trim().toLowerCase() === q.correct.toLowerCase();
+                    input.style.borderColor = isCorrect ? 'var(--success)' : 'var(--error)';
+                    const feedback = document.createElement('p');
+                    feedback.innerHTML = `To'g'ri javob: <b>${q.correct}</b>`;
+                    optDiv.appendChild(input);
+                    optDiv.appendChild(feedback);
+                } else {
+                    input.oninput = (e) => { answers[currentIdx] = e.target.value; renderMatrix(); };
+                    optDiv.appendChild(input);
+                }
+            } 
+            // Savol turi: Test (variantli)
+            else {
+                // Yangi formatda q.options, eskisida q.a, q.b...
+                const opts = q.options || [q.a, q.b, q.c, q.d];
+                const correctAns = q.correct || q.ans;
+
+                opts.forEach((val) => {
+                    if(!val) return;
+                    const item = document.createElement('div');
+                    item.className = "option";
+                    
+                    if(isDone) {
+                        if(val === correctAns) item.classList.add("correct-result");
+                        else if(answers[currentIdx] === val) item.classList.add("wrong-result");
+                    } else if(answers[currentIdx] === val) {
+                        item.classList.add("selected");
+                    }
+                    
+                    item.innerText = val;
+                    item.onclick = () => { if(!isDone) { answers[currentIdx] = val; updateUI(); } };
+                    optDiv.appendChild(item);
+                });
             }
-            item.innerText = val;
-            item.onclick = () => { if(!isDone) { answers[currentIdx] = val; updateUI(); } };
-            optDiv.appendChild(item);
-        });
-    }
-    renderMatrix();
-}
+            renderMatrix();
+        }
 
         function renderMatrix() {
             const m = document.getElementById('matrix');
@@ -195,8 +195,13 @@
                 const btn = document.createElement('div');
                 btn.className = `matrix-item ${i === currentIdx ? 'active' : ''}`;
                 
+                const correctAns = q.correct || q.ans;
+
                 if(isDone) {
-                    btn.classList.add(answers[i] === q.ans ? 'done' : 'wrong');
+                    const isCorrect = q.type === 'yopiq' 
+                        ? (answers[i] || "").trim().toLowerCase() === correctAns.toLowerCase()
+                        : answers[i] === correctAns;
+                    btn.classList.add(isCorrect ? 'done' : 'wrong');
                 } else if(answers[i]) {
                     btn.classList.add('done');
                 }
@@ -208,52 +213,32 @@
         }
 
         function finalize() {
-    isDone = true;
-    let score = 0;
-    questions.forEach((q, i) => {
-        const userAns = (answers[i] || "").toString().trim().toLowerCase();
-        const correctAns = q.correct.toString().trim().toLowerCase();
-        if(userAns === correctAns) score++;
-    });
+            isDone = true;
+            let score = 0;
+            questions.forEach((q, i) => {
+                const correctAns = q.correct || q.ans;
+                const userAns = (answers[i] || "").toString().trim().toLowerCase();
+                if(userAns === correctAns.toString().trim().toLowerCase()) score++;
+            });
 
-    let p = Math.round((score/questions.length)*100);
-    // subject nomi uchun fayl nomini kesib olamiz
-    window.finalData = { 
-        score, 
-        total: questions.length, 
-        percent: p, 
-        subject: fileName ? fileName.split('_')[0] : "Test" 
-    };
+            let p = Math.round((score/questions.length)*100);
+            window.finalData = { 
+                score, total: questions.length, percent: p, 
+                subject: fileName ? fileName.split('_')[0] : "Test" 
+            };
 
-    document.getElementById('resultOverlay').style.display = 'flex';
-    document.getElementById('resPercent').innerText = `${p}%`;
-    document.getElementById('resScore').innerText = `${score} / ${questions.length}`;
-    updateUI();
-}
-        function closeOverlay() {
-            document.getElementById('resultOverlay').style.display = 'none';
+            document.getElementById('resultOverlay').style.display = 'flex';
+            document.getElementById('resPercent').innerText = `${p}%`;
+            document.getElementById('resScore').innerText = `${score} / ${questions.length}`;
+            document.getElementById('resMotivation').innerText = p >= 70 ? "Barakalla!" : "Yana ozroq harakat qiling!";
+            updateUI();
         }
 
         function sendToBot() {
-    // Ma'lumot borligini tekshiramiz
-    if (!window.finalData) {
-        // Agar finalize ishlamay qolgan bo'lsa, qayta hisoblaymiz
-        finalize();
-    }
-
-    // Telegramga ma'lumotni yuborish
-    try {
-        const dataStr = JSON.stringify(window.finalData);
-        tg.sendData(dataStr);
-        
-        // Bir oz kutib keyin yopish (Telegram ba'zan ma'lumotni qabul qilib ulgurishi kerak)
-        setTimeout(() => {
-            tg.close();
-        }, 100);
-    } catch (e) {
-        alert("Xatolik yuz berdi: " + e.message);
-    }
-}
+            if (!window.finalData) finalize();
+            tg.sendData(JSON.stringify(window.finalData));
+            setTimeout(() => tg.close(), 100);
+        }
 
         function startTimer() {
             const t = setInterval(() => {
@@ -267,7 +252,7 @@
 
         function move(s) { currentIdx = Math.max(0, Math.min(questions.length-1, currentIdx+s)); updateUI(); }
         function askFinish() { tg.showConfirm("Testni yakunlaysizmi?", (ok) => { if(ok) finalize(); }); }
+        function closeOverlay() { document.getElementById('resultOverlay').style.display = 'none'; }
     </script>
 </body>
 </html>
-
