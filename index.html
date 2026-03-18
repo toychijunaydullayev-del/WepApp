@@ -69,6 +69,14 @@
             z-index: 1000; flex-direction: column; align-items: center; justify-content: center; padding: 25px; text-align: center; 
         }
         #loader { position: fixed; inset: 0; background: white; display: flex; align-items: center; justify-content: center; z-index: 2000; }
+        /* Ustoz AI tugmasi uchun stil */
+    .ai-btn { 
+        background: #8b5cf6; color: white; border: none; padding: 10px; 
+        border-radius: 8px; margin-top: 10px; width: 100%; font-weight: bold;
+        display: none; /* Faqat xato javobda chiqadi */
+    }
+    .option.correct-result { background: #dcfce7 !important; border-color: #22c55e !important; color: #166534; }
+    .option.wrong-result { background: #fee2e2 !important; border-color: #ef4444 !important; color: #991b1b; }
     </style>
 </head>
 <body>
@@ -274,6 +282,75 @@
         function move(s) { currentIdx = Math.max(0, Math.min(questions.length-1, currentIdx+s)); updateUI(); }
         function askFinish() { tg.showConfirm("Testni yakunlaysizmi?", (ok) => { if(ok) finalize(); }); }
         function closeOverlay() { document.getElementById('resultOverlay').style.display = 'none'; }
+        // ... avvalgi o'zgaruvchilar ...
+    const urlParams = new URLSearchParams(window.location.search);
+    const mode = urlParams.get('mode') || 'free'; // 'free' yoki 'paid'
+
+    function updateUI() {
+        const q = questions[currentIdx];
+        const optDiv = document.getElementById('options');
+        optDiv.innerHTML = '';
+
+        // Variantlarni chiqarish
+        const opts = q.options || [];
+        opts.forEach(val => {
+            const item = document.createElement('div');
+            item.className = "option";
+            const isSelected = answers[currentIdx] === val;
+            const isCorrect = val === q.correct;
+
+            if (isDone) {
+                if (isCorrect) item.classList.add("correct-result");
+                else if (isSelected) item.classList.add("wrong-result");
+            } else if (isSelected) {
+                item.classList.add("selected");
+            }
+
+            item.innerText = val;
+            item.onclick = () => { if(!isDone) { answers[currentIdx] = val; updateUI(); } };
+            optDiv.appendChild(item);
+        });
+
+        // Ustoz AI tugmasi (faqat test tugagach va xato bo'lsa)
+        if (isDone && answers[currentIdx] !== q.correct) {
+            const aiBtn = document.createElement('button');
+            aiBtn.className = "ai-btn";
+            aiBtn.style.display = "block";
+            aiBtn.innerText = "🤖 Ustoz AI dan so'rash";
+            aiBtn.onclick = () => askAI(q);
+            optDiv.appendChild(aiBtn);
+        }
+        renderMatrix();
+    }
+
+    function askAI(q) {
+        if (mode === 'free') {
+            tg.showAlert("⚠️ Bu funksiya faqat pullik testlarda ishlaydi!");
+        } else {
+            // Botga AI so'rovini yuborish
+            tg.sendData(JSON.stringify({
+                action: "ask_ai",
+                question: q.q,
+                user_ans: answers[currentIdx],
+                correct_ans: q.correct
+            }));
+            tg.close();
+        }
+    }
+
+    function finalize() {
+        isDone = true;
+        let score = 0;
+        questions.forEach((q, i) => {
+            if (answers[i] === q.correct) score++;
+        });
+        
+        let p = Math.round((score/questions.length)*100);
+        document.getElementById('resPercent').innerText = p + "%";
+        document.getElementById('resScore').innerText = `${score} / ${questions.length}`;
+        document.getElementById('resultOverlay').style.display = 'flex';
+        updateUI();
+    }
     </script>
 </body>
 </html>
