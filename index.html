@@ -117,203 +117,258 @@
 
     <script>
         let tg = window.Telegram.WebApp;
-tg.expand();
+        tg.expand();
 
-let currentIdx = 0, questions = [], answers = {}, isDone = false, timeLeft = 0;
-const urlParams = new URLSearchParams(window.location.search);
-const fileName = urlParams.get('file');
-const mode = urlParams.get('mode') || 'free'; 
-
-document.getElementById('userName').innerText = tg.initDataUnsafe.user?.first_name || "Foydalanuvchi";
-
-fetch(`./${fileName}?v=${Math.random()}`)
-.then(r => {
-    if (!r.ok) throw new Error('Fayl topilmadi');
-    return r.json();
-})
-.then(data => {
-    if (!data || data.length === 0) {
-        document.getElementById('loader').innerHTML = "ℹ️ Bu test hali tayyor emas.<br>Tez orada joylanadi!";
-        return;
-    }
-    questions = data;
-    timeLeft = questions.length * 60;
-    document.getElementById('loader').style.display = 'none';
-    startTimer();
-    updateUI();
-})
-.catch(err => {
-    document.getElementById('loader').innerHTML = "⚠️ Test yuklashda xatolik yuz berdi yoki fayl mavjud emas.";
-});
-
-// Yagona va mukammal updateUI funksiyasi
-function updateUI() {
-    const q = questions[currentIdx];
-    const questionText = q.q || q.t || "Savol matni yo'q";
-    document.getElementById('qText').innerHTML = `<b>${currentIdx+1}.</b> ${questionText}`;
-    
-    const mediaDiv = document.getElementById('qMedia');
-    mediaDiv.innerHTML = q.image ? `<img src="${q.image}" class="q-image">` : '';
-
-    const optDiv = document.getElementById('options');
-    optDiv.innerHTML = '';
-
-    const correctAns = (q.correct || q.ans || "").toString().trim().toLowerCase();
-    const currentUserAns = (answers[currentIdx] || "").toString().trim().toLowerCase();
-
-    // 1. Yopiq savollar uchun
-    if(q.type === 'yopiq') {
-        const input = document.createElement('input');
-        input.className = "input-ans";
-        input.placeholder = "Javobingizni yozing...";
-        input.value = answers[currentIdx] || '';
-        input.disabled = isDone;
+        let currentIdx = 0, questions = [], answers = {}, isDone = false, timeLeft = 0;
+        const urlParams = new URLSearchParams(window.location.search);
+        const fileName = urlParams.get('file');
         
-        if(isDone) {
-            const isCorrect = currentUserAns === correctAns;
-            input.style.borderColor = isCorrect ? 'var(--success)' : 'var(--error)';
-            const feedback = document.createElement('p');
-            feedback.innerHTML = `To'g'ri javob: <b>${q.correct}</b>`;
-            optDiv.appendChild(input);
-            optDiv.appendChild(feedback);
-        } else {
-            input.oninput = (e) => { answers[currentIdx] = e.target.value; renderMatrix(); };
-            optDiv.appendChild(input);
-        }
-    } 
-    // 2. Oddiy test savollari uchun (Variantli)
-    else {
-        const opts = q.options || [q.a, q.b, q.c, q.d];
-        opts.forEach((val) => {
-            if(!val) return;
-            const item = document.createElement('div');
-            item.className = "option";
-            
-            const valStr = val.toString().trim();
-            const valLower = valStr.toLowerCase();
+        // 🛑 O'ZGARISH: Rejimni to'g'ridan-to'g'ri fayl nomidan olamiz (Muammo hal bo'ldi)
+        const mode = fileName && fileName.startsWith('paid_') ? 'paid' : 'free';
 
-            if(isDone) {
-                if(valLower === correctAns) {
-                    item.classList.add("correct-result"); 
-                } else if(valLower === currentUserAns) {
-                    item.classList.add("wrong-result"); 
-                }
-            } else if(currentUserAns === valLower) {
-                item.classList.add("selected");
+        document.getElementById('userName').innerText = tg.initDataUnsafe.user?.first_name || "Foydalanuvchi";
+
+        fetch(`./${fileName}?v=${Math.random()}`)
+        .then(r => {
+            if (!r.ok) throw new Error('Fayl topilmadi');
+            return r.json();
+        })
+        .then(data => {
+            if (!data || data.length === 0) {
+                document.getElementById('loader').innerHTML = "ℹ️ Bu test hali tayyor emas.<br>Tez orada joylanadi!";
+                return;
             }
-            
-            item.innerText = valStr;
-            item.onclick = () => { if(!isDone) { answers[currentIdx] = valStr; updateUI(); } };
-            optDiv.appendChild(item);
+            questions = data;
+            timeLeft = questions.length * 60;
+            document.getElementById('loader').style.display = 'none';
+            startTimer();
+            updateUI();
+        })
+        .catch(err => {
+            document.getElementById('loader').innerHTML = "⚠️ Test yuklashda xatolik yuz berdi yoki fayl mavjud emas.";
         });
-    }
 
-    // Ustoz AI tugmasi (Faqat test tugasa va javob xato bo'lsa chiqadi)
-    if (isDone && currentUserAns !== correctAns && currentUserAns !== "") {
-        const aiBtn = document.createElement('button');
-        aiBtn.className = "ai-btn";
-        aiBtn.style.display = "block";
-        aiBtn.innerText = "🤖 Ustoz AI dan so'rash";
-        aiBtn.onclick = () => askAI(q);
-        optDiv.appendChild(aiBtn);
-    }
-    renderMatrix();
-}
+        function updateUI() {
+            const q = questions[currentIdx];
+            const questionText = q.q || q.t || "Savol matni yo'q";
+            document.getElementById('qText').innerHTML = `<b>${currentIdx+1}.</b> ${questionText}`;
+            
+            const mediaDiv = document.getElementById('qMedia');
+            mediaDiv.innerHTML = q.image ? `<img src="${q.image}" class="q-image">` : '';
 
-function renderMatrix() {
-    const m = document.getElementById('matrix');
-    m.innerHTML = '';
-    questions.forEach((q, i) => {
-        const btn = document.createElement('div');
-        btn.className = `matrix-item ${i === currentIdx ? 'active' : ''}`;
-        
-        const correctAns = (q.correct || q.ans || "").toString().trim().toLowerCase();
-        const userAns = (answers[i] || "").toString().trim().toLowerCase();
+            const optDiv = document.getElementById('options');
+            optDiv.innerHTML = '';
 
-        if(isDone) {
-            const isCorrect = userAns === correctAns && userAns !== "";
-            btn.classList.add(isCorrect ? 'done' : 'wrong');
-        } else if(answers[i]) {
-            btn.classList.add('done');
+            const correctAns = (q.correct || q.ans || "").toString().trim().toLowerCase();
+            const currentUserAns = (answers[currentIdx] || "").toString().trim().toLowerCase();
+
+            // 1. Yopiq savollar uchun (Ochiq savollar)
+            if(q.type === 'yopiq') {
+                const input = document.createElement('input');
+                input.className = "input-ans";
+                input.placeholder = "Javobingizni yozing...";
+                input.value = answers[currentIdx] || '';
+                input.disabled = isDone;
+                
+                if(isDone) {
+                    const isCorrect = currentUserAns === correctAns;
+                    input.style.borderColor = isCorrect ? 'var(--success)' : 'var(--error)';
+                    input.style.backgroundColor = isCorrect ? '#f0fdf4' : '#fef2f2';
+                    const feedback = document.createElement('p');
+                    feedback.style.color = isCorrect ? '#166534' : '#991b1b';
+                    feedback.style.fontWeight = 'bold';
+                    feedback.innerHTML = `To'g'ri javob: <b>${q.correct}</b>`;
+                    optDiv.appendChild(input);
+                    optDiv.appendChild(feedback);
+                } else {
+                    input.oninput = (e) => { answers[currentIdx] = e.target.value; renderMatrix(); };
+                    optDiv.appendChild(input);
+                }
+            } 
+            // 2. Oddiy test savollari uchun (Variantli)
+            else {
+                const opts = q.options || [q.a, q.b, q.c, q.d];
+                opts.forEach((val) => {
+                    if(!val) return;
+                    const item = document.createElement('div');
+                    item.className = "option";
+                    
+                    const valStr = val.toString().trim();
+                    const valLower = valStr.toLowerCase();
+
+                    if(isDone) {
+                        if(valLower === correctAns) {
+                            item.classList.add("correct-result"); 
+                        } else if(valLower === currentUserAns) {
+                            item.classList.add("wrong-result"); 
+                        }
+                    } else if(currentUserAns === valLower) {
+                        item.classList.add("selected");
+                    }
+                    
+                    item.innerText = valStr;
+                    item.onclick = () => { if(!isDone) { answers[currentIdx] = valStr; updateUI(); } };
+                    optDiv.appendChild(item);
+                });
+            }
+
+            // 🛑 USTOZ AI TUGMASI VA MATN KIRITISH OYNASI (Yangi qism)
+            if (isDone && currentUserAns !== correctAns) {
+                const aiContainer = document.createElement('div');
+                aiContainer.style.marginTop = "15px";
+                aiContainer.style.background = "#f8fafc";
+                aiContainer.style.padding = "10px";
+                aiContainer.style.borderRadius = "8px";
+                aiContainer.style.border = "1px dashed #8b5cf6";
+
+                const aiBtn = document.createElement('button');
+                aiBtn.className = "ai-btn";
+                aiBtn.style.display = "block";
+                aiBtn.innerText = "🤖 Ustoz AI dan so'rash";
+                
+                // Matn yozish qutisi (Boshida yashirin turadi)
+                const aiInputBox = document.createElement('div');
+                aiInputBox.style.display = "none";
+                aiInputBox.style.marginTop = "10px";
+                
+                const aiInput = document.createElement('textarea');
+                aiInput.placeholder = "Siz aynan nimaga tushunmadingiz, hurmatli ishtirokchi?";
+                aiInput.style.width = "100%";
+                aiInput.style.padding = "10px";
+                aiInput.style.borderRadius = "8px";
+                aiInput.style.border = "1px solid #8b5cf6";
+                aiInput.style.boxSizing = "border-box";
+                aiInput.style.minHeight = "70px";
+                aiInput.style.fontFamily = "inherit";
+                aiInput.style.resize = "vertical";
+                
+                const sendAiBtn = document.createElement('button');
+                sendAiBtn.innerText = "Savolni yuborish 🚀";
+                sendAiBtn.style.background = "#8b5cf6";
+                sendAiBtn.style.color = "white";
+                sendAiBtn.style.border = "none";
+                sendAiBtn.style.padding = "12px";
+                sendAiBtn.style.borderRadius = "8px";
+                sendAiBtn.style.width = "100%";
+                sendAiBtn.style.marginTop = "8px";
+                sendAiBtn.style.fontWeight = "bold";
+
+                aiInputBox.appendChild(aiInput);
+                aiInputBox.appendChild(sendAiBtn);
+                
+                aiBtn.onclick = () => {
+                    if (mode === 'free') {
+                        tg.showAlert("⚠️ Bu funksiya faqat pullik testlarda ishlaydi!");
+                    } else {
+                        aiBtn.style.display = "none"; // Tugmani yashirib, yozish oynasini ochamiz
+                        aiInputBox.style.display = "block";
+                        aiInput.focus();
+                    }
+                };
+
+                sendAiBtn.onclick = () => {
+                    const userText = aiInput.value.trim();
+                    if(!userText) {
+                        tg.showAlert("Iltimos, nimaga tushunmaganingizni yozing!");
+                        return;
+                    }
+                    tg.sendData(JSON.stringify({
+                        action: "ask_ai",
+                        question: q.q || q.t,
+                        user_ans: answers[currentIdx],
+                        correct_ans: q.correct || q.ans,
+                        user_note: userText // O'quvchining savoli botga jo'natiladi
+                    }));
+                    tg.close();
+                };
+
+                aiContainer.appendChild(aiBtn);
+                aiContainer.appendChild(aiInputBox);
+                optDiv.appendChild(aiContainer);
+            }
+            renderMatrix();
         }
-        
-        btn.innerText = i + 1;
-        btn.onclick = () => { currentIdx = i; updateUI(); };
-        m.appendChild(btn);
-    });
-}
 
-// Yagona finalize funksiyasi (Ma'lumotlar botga aniq yetib boradi)
-function finalize() {
-    isDone = true;
-    let score = 0;
-    
-    questions.forEach((q, i) => {
-        const correctAns = (q.correct || q.ans || "").toString().trim().toLowerCase();
-        const userAns = (answers[i] || "").toString().trim().toLowerCase();
-        
-        if(userAns === correctAns && userAns !== "") {
-            score++;
+        function renderMatrix() {
+            const m = document.getElementById('matrix');
+            m.innerHTML = '';
+            questions.forEach((q, i) => {
+                const btn = document.createElement('div');
+                btn.className = `matrix-item ${i === currentIdx ? 'active' : ''}`;
+                
+                const correctAns = (q.correct || q.ans || "").toString().trim().toLowerCase();
+                const userAns = (answers[i] || "").toString().trim().toLowerCase();
+
+                if(isDone) {
+                    const isCorrect = userAns === correctAns && userAns !== "";
+                    btn.classList.add(isCorrect ? 'done' : 'wrong');
+                } else if(answers[i]) {
+                    btn.classList.add('done');
+                }
+                
+                btn.innerText = i + 1;
+                btn.onclick = () => { currentIdx = i; updateUI(); };
+                m.appendChild(btn);
+            });
         }
-    });
 
-    let p = Math.round((score / questions.length) * 100);
-    
-    // Fayl nomidan fanni ajratib olish (masalan: free_A_kimyo_123.json -> kimyo)
-    let subName = "Test";
-    if (fileName) {
-        let parts = fileName.split('_');
-        subName = parts.length > 2 ? parts[2] : parts[0];
-        subName = subName.charAt(0).toUpperCase() + subName.slice(1);
-    }
+        function finalize() {
+            isDone = true;
+            let score = 0;
+            
+            questions.forEach((q, i) => {
+                const correctAns = (q.correct || q.ans || "").toString().trim().toLowerCase();
+                const userAns = (answers[i] || "").toString().trim().toLowerCase();
+                
+                if(userAns === correctAns && userAns !== "") {
+                    score++;
+                }
+            });
 
-    window.finalData = { 
-        score: score, 
-        total: questions.length, 
-        percent: p, 
-        subject: subName,
-        file_name: fileName
-    };
+            let p = Math.round((score / questions.length) * 100);
+            
+            let subName = "Test";
+            if (fileName) {
+                let parts = fileName.split('_');
+                subName = parts.length > 2 ? parts[2] : parts[0];
+                subName = subName.charAt(0).toUpperCase() + subName.slice(1);
+            }
 
-    document.getElementById('resultOverlay').style.display = 'flex';
-    document.getElementById('resPercent').innerText = `${p}%`;
-    document.getElementById('resScore').innerText = `${score} / ${questions.length}`;
-    updateUI(); 
-}
+            window.finalData = { 
+                score: score, 
+                total: questions.length, 
+                percent: p, 
+                subject: subName,
+                file_name: fileName
+            };
 
-function sendToBot() {
-    if (!window.finalData) finalize();
-    tg.sendData(JSON.stringify(window.finalData));
-    setTimeout(() => tg.close(), 100);
-}
+            document.getElementById('resultOverlay').style.display = 'flex';
+            document.getElementById('resPercent').innerText = `${p}%`;
+            document.getElementById('resScore').innerText = `${score} / ${questions.length}`;
+            updateUI(); 
+        }
 
-function startTimer() {
-    const t = setInterval(() => {
-        if(timeLeft > 0 && !isDone) {
-            timeLeft--;
-            let m = Math.floor(timeLeft/60), s = timeLeft%60;
-            document.getElementById('timer').innerText = `${m}:${s<10?'0'+s:s}`;
-        } else if(timeLeft === 0 && !isDone) { clearInterval(t); finalize(); }
-    }, 1000);
-}
+        function sendToBot() {
+            if (!window.finalData) finalize();
+            tg.sendData(JSON.stringify(window.finalData));
+            setTimeout(() => tg.close(), 100);
+        }
 
-function move(s) { currentIdx = Math.max(0, Math.min(questions.length-1, currentIdx+s)); updateUI(); }
-function askFinish() { tg.showConfirm("Testni yakunlaysizmi?", (ok) => { if(ok) finalize(); }); }
-function closeOverlay() { document.getElementById('resultOverlay').style.display = 'none'; }
+        function startTimer() {
+            const t = setInterval(() => {
+                if(timeLeft > 0 && !isDone) {
+                    timeLeft--;
+                    let m = Math.floor(timeLeft/60), s = timeLeft%60;
+                    document.getElementById('timer').innerText = `${m}:${s<10?'0'+s:s}`;
+                } else if(timeLeft === 0 && !isDone) { clearInterval(t); finalize(); }
+            }, 1000);
+        }
 
-function askAI(q) {
-    if (mode === 'free') {
-        tg.showAlert("⚠️ Bu funksiya faqat pullik testlarda ishlaydi!");
-    } else {
-        tg.sendData(JSON.stringify({
-            action: "ask_ai",
-            question: q.q,
-            user_ans: answers[currentIdx],
-            correct_ans: q.correct
-        }));
-        tg.close();
-    }
-}
+        function move(s) { currentIdx = Math.max(0, Math.min(questions.length-1, currentIdx+s)); updateUI(); }
+        function askFinish() { tg.showConfirm("Testni yakunlaysizmi?", (ok) => { if(ok) finalize(); }); }
+        
+        // 🛑 O'ZGARISH: Oyna yopilganda ham UI yangilanadi va ranglar ishlaydi
+        function closeOverlay() { document.getElementById('resultOverlay').style.display = 'none'; updateUI(); }
     </script>
 </body>
 </html>
