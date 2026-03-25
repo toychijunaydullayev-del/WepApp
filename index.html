@@ -133,45 +133,37 @@
         tg.expand();
 
         let currentIdx = 0, questions = [], answers = {}, isDone = false, timeLeft = 0;
-        const urlParams = new URLSearchParams(window.location.search);
-        const fileName = urlParams.get('test') || urlParams.get('file');
-        
-        // 🛑 O'ZGARISH: Rejimni to'g'ridan-to'g'ri fayl nomidan olamiz (Muammo hal bo'ldi)
-        const mode = fileName && fileName.startsWith('paid_') ? 'paid' : 'free';
+        const GITHUB_USER = "toychijunaydullayev-del"; 
+    const GITHUB_REPO = "WepApp";
+    const urlParams = new URLSearchParams(window.location.search);
+    const fileName = urlParams.get('test') || urlParams.get('file');
 
-        document.getElementById('userName').innerText = tg.initDataUnsafe.user?.first_name || "Foydalanuvchi";
+    if (!fileName) {
+        document.getElementById('loader').innerHTML = "⚠️ Xatolik: Test nomi kelmadi!";
+    } else {
+        const cleanFileName = fileName.endsWith('.json') ? fileName : `${fileName}.json`;
+        const rawUrl = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/main/${cleanFileName}`;
 
-        // 1. GitHub ma'lumotlaringizni o'zgaruvchilarga olamiz
-const GITHUB_USER = "toychijunaydullayev-del"; 
-const GITHUB_REPO = "WepApp";
-
-// 2. Fayl nomini to'g'rilaymiz (.json qo'shimchasi bilan)
-const cleanFileName = fileName.endsWith('.json') ? fileName : `${fileName}.json`;
-
-// 3. GitHub "Raw" manzilini yasaymiz
-const rawUrl = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/main/${cleanFileName}`;
-
-// 4. Endi GitHub dan tortib olamiz
-fetch(`${rawUrl}?v=${Math.random()}`)
-    .then(r => {
-        if (!r.ok) throw new Error('GitHub dan fayl topilmadi');
-        return r.json();
-    })
-    .then(data => {
-        if (!data || data.length === 0) {
-            document.getElementById('loader').innerHTML = "ℹ️ Bu test hali tayyor emas.<br>Tez orada joylanadi!";
-            return;
-        }
-        questions = data;
-        timeLeft = questions.length * 60;
-        document.getElementById('loader').style.display = 'none';
-        startTimer();
-        updateUI();
-    })
-    .catch(err => {
-        console.error("Xatolik:", err);
-        document.getElementById('loader').innerHTML = "⚠️ Test yuklashda xatolik yuz berdi yoki fayl mavjud emas.";
-    });
+        fetch(`${rawUrl}?v=${Math.random()}`)
+            .then(r => {
+                if (!r.ok) throw new Error('Fayl topilmadi');
+                return r.json();
+            })
+            .then(data => {
+                if (!data || data.length === 0) {
+                    document.getElementById('loader').innerHTML = "ℹ️ Bu test hali tayyor emas.";
+                    return;
+                }
+                questions = data;
+                timeLeft = questions.length * 60;
+                document.getElementById('loader').style.display = 'none';
+                startTimer();
+                updateUI();
+            })
+            .catch(err => {
+                document.getElementById('loader').innerHTML = "⚠️ Testni yuklab bo'lmadi.";
+            });
+    }
 
         function updateUI() {
             const q = questions[currentIdx];
