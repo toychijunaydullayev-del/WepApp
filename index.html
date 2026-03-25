@@ -134,7 +134,7 @@
 
         let currentIdx = 0, questions = [], answers = {}, isDone = false, timeLeft = 0;
         const urlParams = new URLSearchParams(window.location.search);
-        const fileName = urlParams.get('file');
+        const fileName = urlParams.get('test') || urlParams.get('file');
         
         // 🛑 O'ZGARISH: Rejimni to'g'ridan-to'g'ri fayl nomidan olamiz (Muammo hal bo'ldi)
         const mode = fileName && fileName.startsWith('paid_') ? 'paid' : 'free';
