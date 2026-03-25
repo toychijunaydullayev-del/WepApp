@@ -130,17 +130,22 @@
 
     <script>
         let tg = window.Telegram.WebApp;
-        tg.expand();
+    tg.expand();
 
-        let currentIdx = 0, questions = [], answers = {}, isDone = false, timeLeft = 0;
-        const GITHUB_USER = "toychijunaydullayev-del"; 
-    const GITHUB_REPO = "WepApp";
+    let currentIdx = 0, questions = [], answers = {}, isDone = false, timeLeft = 0;
     const urlParams = new URLSearchParams(window.location.search);
+    
+    // 🛑 MUHIM: Bot 'test' parametri orqali yuboradi
     const fileName = urlParams.get('test') || urlParams.get('file');
 
+    // GitHub sozlamalari
+    const GITHUB_USER = "toychijunaydullayev-del"; 
+    const GITHUB_REPO = "WepApp";
+
     if (!fileName) {
-        document.getElementById('loader').innerHTML = "⚠️ Xatolik: Test nomi kelmadi!";
+        document.getElementById('loader').innerHTML = "⚠️ Xatolik: Test nomi topilmadi!";
     } else {
+        // Fayl nomini to'g'rilash
         const cleanFileName = fileName.endsWith('.json') ? fileName : `${fileName}.json`;
         const rawUrl = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/main/${cleanFileName}`;
 
@@ -151,7 +156,7 @@
             })
             .then(data => {
                 if (!data || data.length === 0) {
-                    document.getElementById('loader').innerHTML = "ℹ️ Bu test hali tayyor emas.";
+                    document.getElementById('loader').innerHTML = "ℹ️ Test hali tayyor emas.";
                     return;
                 }
                 questions = data;
@@ -161,7 +166,8 @@
                 updateUI();
             })
             .catch(err => {
-                document.getElementById('loader').innerHTML = "⚠️ Testni yuklab bo'lmadi.";
+                console.error(err);
+                document.getElementById('loader').innerHTML = "⚠️ Test yuklashda xatolik yuz berdi.";
             });
     }
 
