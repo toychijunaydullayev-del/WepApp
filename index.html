@@ -133,21 +133,27 @@
     tg.expand();
 
     let currentIdx = 0, questions = [], answers = {}, isDone = false, timeLeft = 0;
+    
+    // 1. URL parametrlarini olish
     const urlParams = new URLSearchParams(window.location.search);
     
-    // 🛑 MUHIM: Bot 'test' parametri orqali yuboradi
+    // 🛑 MUHIM: Bot 'test' deb yuboradi, shuni qidiramiz
     const fileName = urlParams.get('test') || urlParams.get('file');
 
-    // GitHub sozlamalari
+    // 2. GitHub sozlamalari (Faqat shu ikki qatorni tekshiring)
     const GITHUB_USER = "toychijunaydullayev-del"; 
     const GITHUB_REPO = "WepApp";
 
     if (!fileName) {
-        document.getElementById('loader').innerHTML = "⚠️ Xatolik: Test nomi topilmadi!";
+        document.getElementById('loader').innerHTML = "⚠️ Xatolik: Test nomi topilmadi (URL xato)!";
     } else {
-        // Fayl nomini to'g'rilash
+        // .json kengaytmasini to'g'rilash
         const cleanFileName = fileName.endsWith('.json') ? fileName : `${fileName}.json`;
+        
+        // GitHub Raw manzili
         const rawUrl = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/main/${cleanFileName}`;
+
+        console.log("Yuklanayotgan manzil:", rawUrl);
 
         fetch(`${rawUrl}?v=${Math.random()}`)
             .then(r => {
@@ -156,7 +162,7 @@
             })
             .then(data => {
                 if (!data || data.length === 0) {
-                    document.getElementById('loader').innerHTML = "ℹ️ Test hali tayyor emas.";
+                    document.getElementById('loader').innerHTML = "ℹ️ Bu test hali tayyor emas.";
                     return;
                 }
                 questions = data;
@@ -166,8 +172,7 @@
                 updateUI();
             })
             .catch(err => {
-                console.error(err);
-                document.getElementById('loader').innerHTML = "⚠️ Test yuklashda xatolik yuz berdi.";
+                document.getElementById('loader').innerHTML = `⚠️ Test yuklanmadi. <br><small>Fayl: ${cleanFileName} topilmadi.</small>`;
             });
     }
 
