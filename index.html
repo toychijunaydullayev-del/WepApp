@@ -134,18 +134,20 @@
 
     let currentIdx = 0, questions = [], answers = {}, isDone = false, timeLeft = 0;
     
-    // 1. URL dan 'test' parametrini olamiz
+    // 1. URL parametrlarini olish
     const urlParams = new URLSearchParams(window.location.search);
-    const fileName = urlParams.get('test'); // 🛑 Faqat 'test' ni qidiramiz
+    
+    // 🛑 BOTDAN 'test' bo'lib keladi, shuni aniq o'qiymiz
+    const fileName = urlParams.get('test'); 
 
-    // 2. GitHub sozlamalari
+    // 2. GitHub sozlamalari (Repozitoriya nomiga e'tibor bering: WepApp)
     const GITHUB_USER = "toychijunaydullayev-del"; 
-    const GITHUB_REPO = "WepApp";
+    const GITHUB_REPO = "WepApp"; 
 
     if (!fileName) {
-        document.getElementById('loader').innerHTML = "⚠️ Xatolik: Test nomi kelmadi!";
+        document.getElementById('loader').innerHTML = "⚠️ Xatolik: Test nomi topilmadi!";
     } else {
-        // .json kengaytmasini tekshirish
+        // .json qo'shimchasini tekshirish
         const cleanFileName = fileName.endsWith('.json') ? fileName : `${fileName}.json`;
         const rawUrl = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/main/${cleanFileName}`;
 
