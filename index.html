@@ -134,20 +134,15 @@
 
     let currentIdx = 0, questions = [], answers = {}, isDone = false, timeLeft = 0;
     
-    // 1. URL parametrlarini olish
     const urlParams = new URLSearchParams(window.location.search);
-    
-    // 🛑 BOTDAN 'test' bo'lib keladi, shuni aniq o'qiymiz
-    const fileName = urlParams.get('test'); 
+    const fileName = urlParams.get('test'); // Bot yuborgan ?test=... qismini oladi
 
-    // 2. GitHub sozlamalari (Repozitoriya nomiga e'tibor bering: WepApp)
     const GITHUB_USER = "toychijunaydullayev-del"; 
-    const GITHUB_REPO = "WepApp"; 
+    const GITHUB_REPO = "WepApp"; // Sizning repozitoriyangiz nomi
 
     if (!fileName) {
         document.getElementById('loader').innerHTML = "⚠️ Xatolik: Test nomi topilmadi!";
     } else {
-        // .json qo'shimchasini tekshirish
         const cleanFileName = fileName.endsWith('.json') ? fileName : `${fileName}.json`;
         const rawUrl = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/main/${cleanFileName}`;
 
