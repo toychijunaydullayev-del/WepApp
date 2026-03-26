@@ -137,20 +137,28 @@
     // 1. URL parametrlarini olish
     const urlParams = new URLSearchParams(window.location.search);
     
-    // 🛑 MUHIM: Bot 'test' deb yuboradi, shuni qidiramiz
+    // 🛑 BOTDAN 'test' deb keladi, shuni qidiramiz
     const fileName = urlParams.get('test') || urlParams.get('file');
 
-    // 2. GitHub sozlamalari (Faqat shu ikki qatorni tekshiring)
+    // 2. GitHub sozlamalari
     const GITHUB_USER = "toychijunaydullayev-del"; 
-    const GITHUB_REPO = "WepApp";
+    const GITHUB_REPO = "WepApp"; // Repozitoriya nomi 'WepApp' ekanligiga ishonch hosil qiling
+
+    // 3. Rejimni aniqlash
+    const mode = fileName && fileName.startsWith('paid_') ? 'paid' : 'free';
+
+    document.getElementById('userName').innerText = tg.initDataUnsafe.user?.first_name || "Foydalanuvchi";
 
     if (!fileName) {
         document.getElementById('loader').innerHTML = "⚠️ Xatolik: Test nomi topilmadi (URL xato)!";
     } else {
-        // .json kengaytmasini to'g'rilash
-        const cleanFileName = fileName.endsWith('.json') ? fileName : `${fileName}.json`;
+        // .json kengaytmasini to'g'rilash (ikki marta qo'shilib ketmasligi uchun)
+        let cleanFileName = fileName;
+        if (!cleanFileName.endsWith('.json')) {
+            cleanFileName += '.json';
+        }
         
-        // GitHub Raw manzili
+        // GitHub Raw manzili (To'g'ri formatda)
         const rawUrl = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/main/${cleanFileName}`;
 
         console.log("Yuklanayotgan manzil:", rawUrl);
@@ -166,12 +174,13 @@
                     return;
                 }
                 questions = data;
-                timeLeft = questions.length * 60;
+                timeLeft = questions.length * 60; // Har bir savolga 1 daqiqa
                 document.getElementById('loader').style.display = 'none';
                 startTimer();
                 updateUI();
             })
             .catch(err => {
+                console.error("Xato:", err);
                 document.getElementById('loader').innerHTML = `⚠️ Test yuklanmadi. <br><small>Fayl: ${cleanFileName} topilmadi.</small>`;
             });
     }
