@@ -134,34 +134,20 @@
 
     let currentIdx = 0, questions = [], answers = {}, isDone = false, timeLeft = 0;
     
-    // 1. URL parametrlarini olish
+    // 1. URL dan 'test' parametrini olamiz
     const urlParams = new URLSearchParams(window.location.search);
-    
-    // 🛑 BOTDAN 'test' deb keladi, shuni qidiramiz
-    const fileName = urlParams.get('test') || urlParams.get('file');
+    const fileName = urlParams.get('test'); // 🛑 Faqat 'test' ni qidiramiz
 
     // 2. GitHub sozlamalari
     const GITHUB_USER = "toychijunaydullayev-del"; 
-    const GITHUB_REPO = "WepApp"; // Repozitoriya nomi 'WepApp' ekanligiga ishonch hosil qiling
-
-    // 3. Rejimni aniqlash
-    const mode = fileName && fileName.startsWith('paid_') ? 'paid' : 'free';
-
-    document.getElementById('userName').innerText = tg.initDataUnsafe.user?.first_name || "Foydalanuvchi";
+    const GITHUB_REPO = "WepApp";
 
     if (!fileName) {
-        document.getElementById('loader').innerHTML = "⚠️ Xatolik: Test nomi topilmadi (URL xato)!";
+        document.getElementById('loader').innerHTML = "⚠️ Xatolik: Test nomi kelmadi!";
     } else {
-        // .json kengaytmasini to'g'rilash (ikki marta qo'shilib ketmasligi uchun)
-        let cleanFileName = fileName;
-        if (!cleanFileName.endsWith('.json')) {
-            cleanFileName += '.json';
-        }
-        
-        // GitHub Raw manzili (To'g'ri formatda)
+        // .json kengaytmasini tekshirish
+        const cleanFileName = fileName.endsWith('.json') ? fileName : `${fileName}.json`;
         const rawUrl = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/main/${cleanFileName}`;
-
-        console.log("Yuklanayotgan manzil:", rawUrl);
 
         fetch(`${rawUrl}?v=${Math.random()}`)
             .then(r => {
@@ -169,19 +155,14 @@
                 return r.json();
             })
             .then(data => {
-                if (!data || data.length === 0) {
-                    document.getElementById('loader').innerHTML = "ℹ️ Bu test hali tayyor emas.";
-                    return;
-                }
                 questions = data;
-                timeLeft = questions.length * 60; // Har bir savolga 1 daqiqa
+                timeLeft = questions.length * 60;
                 document.getElementById('loader').style.display = 'none';
                 startTimer();
                 updateUI();
             })
             .catch(err => {
-                console.error("Xato:", err);
-                document.getElementById('loader').innerHTML = `⚠️ Test yuklanmadi. <br><small>Fayl: ${cleanFileName} topilmadi.</small>`;
+                document.getElementById('loader').innerHTML = `⚠️ Test yuklanmadi: ${cleanFileName}`;
             });
     }
 
