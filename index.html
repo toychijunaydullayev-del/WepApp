@@ -100,6 +100,11 @@
         <div id="timer" style="font-family: monospace; font-weight: bold; background: #333; color: white; padding: 4px 10px; border-radius: 6px;">00:00</div>
         <button onclick="askFinish()" style="background:var(--error); color:white; border:none; padding:8px 12px; border-radius:8px; font-weight: bold;">Tugatish</button>
     </div>
+    <div id="options"></div>
+
+<!-- Yangi elementlar -->
+<button id="aiBtn" class="ai-btn" style="display:none;">🤖 Ustoz AI dan tahlil so'rash</button>
+<div id="aiResponseArea" class="ai-response-area"></div>
 
     <div class="matrix-grid" id="matrix"></div>
 
@@ -107,8 +112,6 @@
         <div class="question-card">
             <div id="qText">Savol...</div>
             <div id="qMedia"></div> 
-            <div id="options"></div>
-        </div>
         <div class="nav-bar">
             <button class="btn-nav" onclick="move(-1)">⬅️ Oldingi</button>
             <button class="btn-nav btn-next" onclick="move(1)">Keyingi ➡️</button>
@@ -227,9 +230,31 @@
                 });
             }
 
-            // 🛑 USTOZ AI TUGMASI VA MATN KIRITISH OYNASI (Yangi qism)
-            if (isDone && currentUserAns !== correctAns) {
-                const aiContainer = document.createElement('div');
+            // 1. Fayl nomidan mode ni aniqlash (free yoki paid)
+    const mode = fileName.startsWith("free") ? "free" : "paid";
+
+    // 2. AI tugmasi mantig'ini to'g'rilash
+    if (isDone && currentUserAns !== correctAns) {
+        const aiContainer = document.createElement('div');
+        // ... (aiContainer stilini saqlang)
+
+        const aiBtn = document.createElement('button');
+        aiBtn.className = "ai-btn";
+        aiBtn.style.display = "block";
+        aiBtn.innerText = "🤖 Ustoz AI dan so'rash";
+        
+        // ... (aiInputBox va sendAiBtn qismlarini saqlang)
+
+        aiBtn.onclick = () => {
+            // Endi "mode" o'zgaruvchisi ishlaydi
+            if (mode === 'free') {
+                tg.showAlert("⚠️ Bu funksiya faqat pullik testlarda ishlaydi!");
+            } else {
+                aiBtn.style.display = "none";
+                aiInputBox.style.display = "block";
+                aiInput.focus();
+            }
+        };
                 aiContainer.style.marginTop = "15px";
                 aiContainer.style.background = "#f8fafc";
                 aiContainer.style.padding = "10px";
