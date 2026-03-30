@@ -361,22 +361,37 @@ function closeBanner(){ document.getElementById('channelBanner').style.display='
 setInterval(showBanner, 10 * 60 * 1000);
 
 /* ═══════════════════════════════════════════════
-   LOAD TEST + TIMER
+   LOAD TEST — YAXSHILANGAN VERSIYA
 ═══════════════════════════════════════════════ */
 const REPO_RAW = "https://raw.githubusercontent.com/toychijunaydullayev-del/WepApp/main/";
 
-fetch(REPO_RAW + fileName)
-  .then(r => { if(!r.ok) throw new Error('Fayl topilmadi'); return r.json(); })
-  .then(data => {
+async function loadTest() {
+  const loadingEl = document.getElementById('loading');
+  
+  try {
+    const response = await fetch(REPO_RAW + fileName, {
+      method: 'GET',
+      cache: 'no-cache',
+      headers: {
+        'Accept': 'application/json'
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP xato: ${response.status} - ${response.statusText}`);
+    }
+
+    const data = await response.json();
+
     questions = data;
 
-    // ================== TIMER SOZLASH ==================
+    // Timer sozlash
     const isPedmahorat = fileName.toLowerCase().includes('pedmahorat') || 
                          subjectName.toLowerCase().includes('pedmahorat');
-    
     timerSec = isPedmahorat ? 36 * 60 : 120 * 60;
 
-    document.getElementById('loading').style.display = 'none';
+    // UI ni ko‘rsatish
+    loadingEl.style.display = 'none';
     document.getElementById('mainHeader').style.display = 'flex';
     document.getElementById('qnumWrap').style.display = '';
     document.getElementById('quizUI').style.display = '';
@@ -386,20 +401,32 @@ fetch(REPO_RAW + fileName)
     startTimer();
     render();
 
-    if(mode === 'paid'){
-      setTimeout(() => {
-        tg.showAlert('ℹ️ Bu pullik test. Faqat 1 marta ishlash imkoniyati bor.');
-      }, 2000);
+    if (mode === 'paid') {
+      setTimeout(() => tg.showAlert('ℹ️ Bu pullik test. Diqqat bilan ishlang!'), 1500);
     }
-  })
-  .catch(e => {
-    document.getElementById('loading').innerHTML = `
-      <div style="text-align:center;padding:24px;">
-        <div style="font-size:52px;">⚠️</div>
-        <p style="margin-top:14px;font-weight:800;color:#dc2626;font-size:16px;">Test yuklanmadi</p>
-        <p style="color:#64748b;font-size:13px;margin-top:6px;">${e.message}</p>
+
+  } catch (e) {
+    console.error("Test yuklash xatosi:", e);
+    loadingEl.innerHTML = `
+      <div style="text-align:center;padding:40px 20px;">
+        <div style="font-size:60px;margin-bottom:16px;">⚠️</div>
+        <p style="font-weight:800;color:#dc2626;font-size:18px;">Test yuklanmadi</p>
+        <p style="color:#64748b;font-size:14px;margin:12px 0 20px;">
+          ${e.message}<br><br>
+          <small>Fayl nomi: <b>${fileName}</b></small>
+        </p>
+        <button onclick="location.reload()" 
+                style="padding:12px 24px;background:#3b6cf8;color:white;border:none;border-radius:12px;font-weight:700;">
+          🔄 Qayta yuklash
+        </button>
       </div>`;
-  });
+  }
+}
+
+// Sahifa yuklanganda chaqirish
+window.onload = () => {
+  loadTest();
+};
 
 /* Qolgan funksiyalar: buildQnumGrid, updateQnumGrid, startTimer, updateTimerDisplay, goTo, nextOrFinish, finalize, sendToBot, rating funksiyalari — oldingizdagidek qoldiring */
 
