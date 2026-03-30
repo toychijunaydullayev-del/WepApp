@@ -11,8 +11,8 @@
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 :root{
   --bg:#eef2ff;
-  --card-q:#dde4f7;      /* savol — och xira fon */
-  --card-a:rgba(255,255,255,0.55); /* javoblar — shaffof */
+  --card-q:#dde4f7;
+  --card-a:rgba(255,255,255,0.55);
   --card-a-border:rgba(255,255,255,0.9);
   --primary:#3b6cf8;
   --primary-d:#2d56d4;
@@ -32,6 +32,16 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-
   background-image:radial-gradient(circle at 20% 20%,rgba(123,97,255,0.08) 0%,transparent 55%),
                    radial-gradient(circle at 80% 80%,rgba(59,108,248,0.08) 0%,transparent 55%);}
 
+/* ─── SUBJECT BACKGROUND WATERMARK ─── */
+#subjectBg{
+  position:fixed;inset:0;z-index:0;pointer-events:none;
+  display:flex;align-items:center;justify-content:center;
+  font-size:clamp(40px,12vw,90px);font-weight:900;
+  color:rgba(59,108,248,0.04);text-align:center;
+  letter-spacing:2px;line-height:1.2;
+  user-select:none;padding:20px;
+  word-break:break-word;
+}
 /* ─── LOADING ─────────────────────────────────── */
 #loading{position:fixed;inset:0;background:var(--bg);z-index:999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;}
 .spinner{width:46px;height:46px;border:4px solid rgba(59,108,248,0.2);border-top-color:var(--primary);border-radius:50%;animation:spin .8s linear infinite;}
@@ -41,153 +51,95 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-
 .header{
   position:sticky;top:0;z-index:90;
   background:rgba(255,255,255,0.85);
-  backdrop-filter:blur(12px);
-  -webkit-backdrop-filter:blur(12px);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
   border-bottom:1px solid rgba(255,255,255,0.6);
   padding:10px 14px;
   display:flex;justify-content:space-between;align-items:center;
   box-shadow:0 2px 12px rgba(59,108,248,0.07);
 }
-.user-name{
-  display:flex;align-items:center;gap:7px;
-  font-weight:800;font-size:14px;color:var(--text);
-  max-width:180px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;
-}
-.user-avatar{
-  width:32px;height:32px;border-radius:50%;
-  background:linear-gradient(135deg,#3b6cf8,#7c3aed);
-  display:flex;align-items:center;justify-content:center;
-  color:white;font-weight:900;font-size:13px;flex-shrink:0;
-}
-.timer-box{
-  display:flex;align-items:center;gap:5px;
-  background:var(--bg);border:1.5px solid rgba(59,108,248,0.15);
-  padding:5px 12px;border-radius:20px;
-  font-weight:800;font-size:14px;color:var(--primary);
-}
+.user-name{display:flex;align-items:center;gap:7px;font-weight:800;font-size:14px;color:var(--text);max-width:180px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}
+.user-avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#3b6cf8,#7c3aed);display:flex;align-items:center;justify-content:center;color:white;font-weight:900;font-size:13px;flex-shrink:0;}
+.timer-box{display:flex;align-items:center;gap:5px;background:var(--bg);border:1.5px solid rgba(59,108,248,0.15);padding:5px 12px;border-radius:20px;font-weight:800;font-size:14px;color:var(--primary);}
 .timer-box.warn{color:var(--error);border-color:rgba(220,38,38,0.3);background:#fff5f5;}
 
 /* ─── QUESTION NUMBERS PANEL ────────────────────── */
-.qnum-wrap{
-  position:sticky;top:54px;z-index:80;
-  background:rgba(255,255,255,0.8);backdrop-filter:blur(10px);
-  -webkit-backdrop-filter:blur(10px);
-  border-bottom:1px solid rgba(255,255,255,0.6);
-  padding:8px 12px;box-shadow:0 2px 8px rgba(59,108,248,0.05);
-}
-.qnum-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(32px,1fr));
-  gap:5px;max-height:180px;overflow-y:auto;
-}
-/* Show max 5 rows initially, scroll the rest */
-.qnum-btn{
-  width:100%;aspect-ratio:1;border:none;border-radius:8px;
-  background:rgba(59,108,248,0.08);
-  color:var(--muted);font-weight:700;font-size:12px;
-  cursor:pointer;transition:all .18s;
-}
+.qnum-wrap{position:sticky;top:54px;z-index:80;background:rgba(255,255,255,0.8);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid rgba(255,255,255,0.6);padding:8px 12px;box-shadow:0 2px 8px rgba(59,108,248,0.05);}
+.qnum-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(32px,1fr));gap:5px;max-height:180px;overflow-y:auto;}
+.qnum-btn{width:100%;aspect-ratio:1;border:none;border-radius:8px;background:rgba(59,108,248,0.08);color:var(--muted);font-weight:700;font-size:12px;cursor:pointer;transition:all .18s;}
 .qnum-btn.answered{background:var(--success);color:white;}
 .qnum-btn.active{outline:2.5px solid var(--primary);outline-offset:1px;}
 .qnum-btn.correct-mark{background:var(--success);color:white;}
 .qnum-btn.wrong-mark{background:var(--error);color:white;}
 
 /* ─── CONTAINER ─────────────────────────────────── */
-.container{padding:12px 12px 140px;max-width:600px;margin:0 auto;}
+.container{position:relative;z-index:1;padding:12px 12px 140px;max-width:600px;margin:0 auto;}
 
 /* ─── QUESTION CARD ─────────────────────────────── */
-.q-card{
-  background:var(--card-q);
-  border-radius:var(--r);
-  padding:18px;
-  margin-bottom:10px;
-  border:1px solid rgba(59,108,248,0.12);
-  box-shadow:0 4px 16px rgba(59,108,248,0.08);
-  animation:fadeUp .25s ease;
-}
+.q-card{background:var(--card-q);border-radius:var(--r);padding:18px;margin-bottom:10px;border:1px solid rgba(59,108,248,0.12);box-shadow:0 4px 16px rgba(59,108,248,0.08);animation:fadeUp .25s ease;}
 @keyframes fadeUp{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
 .q-label{font-size:11px;font-weight:800;letter-spacing:1px;color:var(--primary);text-transform:uppercase;margin-bottom:8px;}
-.q-text{font-size:15px;font-weight:600;line-height:1.6;}
+/* === SAVOLLAR MATNI KATTALASHTIRILDI === */
+.q-text{font-size:17px;font-weight:700;line-height:1.65;}
 .q-img{width:100%;border-radius:10px;margin-top:12px;border:1px solid rgba(59,108,248,0.1);}
 
 /* ─── OPTION ─────────────────────────────────────── */
 .options-wrap{display:flex;flex-direction:column;gap:8px;margin-top:4px;}
-.option{
-  background:var(--card-a);
-  border:2px solid var(--card-a-border);
-  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
-  border-radius:12px;padding:13px 14px;
-  display:flex;align-items:center;gap:10px;
-  cursor:pointer;transition:all .18s;
-  font-size:14px;font-weight:600;
-}
+.option{background:var(--card-a);border:2px solid var(--card-a-border);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border-radius:12px;padding:13px 14px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:all .18s;font-size:15px;font-weight:600;}
 .option:active{transform:scale(0.985);}
-.opt-letter{
-  min-width:28px;height:28px;border-radius:8px;
-  background:rgba(59,108,248,0.1);
-  display:flex;align-items:center;justify-content:center;
-  font-size:12px;font-weight:900;color:var(--primary);flex-shrink:0;
-  transition:all .18s;
-}
-/* answered */
-.option.answered-ok{
-  border-color:var(--success);
-  background:rgba(220,252,231,0.7);
-}
+.opt-letter{min-width:28px;height:28px;border-radius:8px;background:rgba(59,108,248,0.1);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;color:var(--primary);flex-shrink:0;transition:all .18s;}
+.option.answered-ok{border-color:var(--success);background:rgba(220,252,231,0.7);}
 .option.answered-ok .opt-letter{background:var(--success);color:white;}
-
-/* result states */
 .option.correct-r{border-color:var(--success);background:rgba(220,252,231,0.8);color:var(--success);}
 .option.correct-r .opt-letter{background:var(--success);color:white;}
 .option.wrong-r{border-color:var(--error);background:rgba(254,226,226,0.8);color:var(--error);}
 .option.wrong-r .opt-letter{background:var(--error);color:white;}
 .option.dim-r{opacity:.45;cursor:default;}
 
+/* ─── OPEN QUESTION (Yopiq test uchun matn kiritish) ─── */
+.open-answer-wrap{margin-top:8px;}
+.open-answer-input{
+  width:100%;border:2px solid rgba(59,108,248,0.25);border-radius:12px;
+  padding:14px;font-size:16px;font-family:'Nunito',sans-serif;font-weight:600;
+  background:rgba(255,255,255,0.7);color:var(--text);
+  outline:none;resize:vertical;min-height:80px;
+  transition:border-color .2s;
+}
+.open-answer-input:focus{border-color:var(--primary);background:white;}
+.open-answer-input:disabled{background:rgba(220,252,231,0.5);border-color:var(--success);}
+.open-save-btn{
+  margin-top:8px;width:100%;padding:13px;border:none;border-radius:12px;
+  background:var(--primary);color:white;font-size:15px;font-weight:800;
+  font-family:'Nunito',sans-serif;cursor:pointer;
+  box-shadow:0 4px 14px rgba(59,108,248,0.3);transition:all .2s;
+}
+.open-save-btn:active{transform:scale(0.97);}
+.open-save-btn:disabled{background:var(--success);cursor:default;}
+
 /* ─── NAV BAR ────────────────────────────────────── */
-.nav-bar{
-  position:fixed;bottom:0;left:0;right:0;
-  background:rgba(255,255,255,0.92);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
-  border-top:1px solid rgba(255,255,255,0.7);
-  padding:8px 12px 20px;
-  display:flex;gap:8px;
-  box-shadow:0 -4px 20px rgba(59,108,248,0.08);
-  z-index:85;
-}
-.btn-nav{
-  flex:1;padding:13px;border:none;border-radius:12px;
-  font-weight:800;font-size:14px;font-family:'Nunito',sans-serif;cursor:pointer;transition:all .18s;
-}
+.nav-bar{position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,0.92);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid rgba(255,255,255,0.7);padding:8px 12px 20px;display:flex;gap:8px;box-shadow:0 -4px 20px rgba(59,108,248,0.08);z-index:85;}
+.btn-nav{flex:1;padding:13px;border:none;border-radius:12px;font-weight:800;font-size:14px;font-family:'Nunito',sans-serif;cursor:pointer;transition:all .18s;}
 .btn-prev{background:rgba(59,108,248,0.08);color:var(--primary);border:2px solid rgba(59,108,248,0.15);}
 .btn-next{background:var(--primary);color:white;flex:2;box-shadow:0 4px 14px rgba(59,108,248,0.35);}
 .btn-finish{background:var(--success);color:white;flex:2;box-shadow:0 4px 14px rgba(22,163,74,0.35);}
 .btn-nav:active{transform:scale(0.97);}
 
-/* ─── MARQUEE (kanal reklama) ─────────────────────── */
-.marquee-wrap{
-  position:fixed;bottom:68px;left:0;right:0;z-index:84;
-  background:rgba(59,108,248,0.08);
-  border-top:1px solid rgba(59,108,248,0.12);
-  border-bottom:1px solid rgba(59,108,248,0.12);
-  padding:4px 0;overflow:hidden;pointer-events:none;
+/* ─── KANAL BANNER (10 daqiqada bir ko'rinadi) ─── */
+#channelBanner{
+  display:none;
+  position:fixed;bottom:72px;left:12px;right:12px;z-index:200;
+  background:linear-gradient(135deg,#3b6cf8,#7c3aed);
+  border-radius:16px;padding:14px 16px;
+  box-shadow:0 8px 28px rgba(59,108,248,0.45);
+  animation:slideUp .4s cubic-bezier(.34,1.56,.64,1);
+  color:white;
 }
-.marquee-track{
-  display:inline-flex;white-space:nowrap;
-  animation:marquee 60s linear infinite;
-}
-@keyframes marquee{0%{transform:translateX(0);}100%{transform:translateX(-50%);}}
-.marquee-item{
-  font-size:12px;font-weight:700;color:var(--primary);
-  padding:0 24px;
-}
-.marquee-item span{color:var(--ai);margin-right:4px;}
+@keyframes slideUp{from{transform:translateY(20px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+#channelBanner .ban-title{font-size:14px;font-weight:900;margin-bottom:4px;}
+#channelBanner .ban-sub{font-size:12px;font-weight:600;opacity:0.85;}
+#channelBanner .ban-close{position:absolute;top:8px;right:10px;background:rgba(255,255,255,0.2);border:none;color:white;width:22px;height:22px;border-radius:50%;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
 
 /* ─── RESULT OVERLAY ──────────────────────────────── */
-#resultOverlay{
-  display:none;position:fixed;inset:0;z-index:200;
-  background:rgba(238,242,255,0.97);backdrop-filter:blur(16px);
-  flex-direction:column;align-items:center;justify-content:flex-start;
-  padding:30px 20px 100px;overflow-y:auto;
-}
+#resultOverlay{display:none;position:fixed;inset:0;z-index:200;background:rgba(238,242,255,0.97);backdrop-filter:blur(16px);flex-direction:column;align-items:center;justify-content:flex-start;padding:30px 20px 100px;overflow-y:auto;}
 .res-icon{font-size:68px;animation:pop .45s cubic-bezier(.34,1.56,.64,1);margin-bottom:6px;}
 @keyframes pop{from{transform:scale(.3);opacity:0;}to{transform:scale(1);opacity:1;}}
 .res-pct{font-size:54px;font-weight:900;background:linear-gradient(135deg,#3b6cf8,#7c3aed);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin:4px 0;}
@@ -195,111 +147,62 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-
 .res-bar-bg{width:100%;max-width:320px;height:10px;background:rgba(59,108,248,0.1);border-radius:20px;margin:14px auto;overflow:hidden;}
 .res-bar-fill{height:100%;border-radius:20px;background:linear-gradient(90deg,#3b6cf8,#7c3aed);transition:width 1.2s cubic-bezier(.4,0,.2,1);}
 .res-msg{font-size:14.5px;font-style:italic;color:var(--text);margin-bottom:20px;text-align:center;padding:0 10px;}
-
 .res-section-title{font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--primary);margin:16px 0 8px;align-self:flex-start;max-width:560px;width:100%;}
 .res-q-list{width:100%;max-width:560px;display:flex;flex-direction:column;gap:8px;}
-.res-q-item{
-  border-radius:12px;padding:12px 14px;font-size:13.5px;font-weight:600;line-height:1.5;
-  display:flex;flex-direction:column;gap:6px;
-}
+.res-q-item{border-radius:12px;padding:12px 14px;font-size:13.5px;font-weight:600;line-height:1.5;display:flex;flex-direction:column;gap:6px;}
 .res-q-item.ok{background:var(--success-bg);border:1.5px solid rgba(22,163,74,0.2);}
 .res-q-item.bad{background:var(--error-bg);border:1.5px solid rgba(220,38,38,0.2);}
 .res-q-num{font-size:11px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;opacity:.7;}
 .res-q-correct{color:var(--success);font-size:13px;}
 .res-q-user{color:var(--error);font-size:13px;}
-.ai-mini-btn{
-  background:var(--ai);color:white;border:none;
-  padding:7px 14px;border-radius:8px;font-size:12.5px;font-weight:700;
-  font-family:'Nunito',sans-serif;cursor:pointer;align-self:flex-start;margin-top:4px;
-  display:flex;align-items:center;gap:6px;
-}
-.btn-save-res{
-  position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
-  background:linear-gradient(135deg,#3b6cf8,#7c3aed);
-  color:white;border:none;padding:15px 40px;border-radius:14px;
-  font-size:15px;font-weight:800;font-family:'Nunito',sans-serif;cursor:pointer;
-  box-shadow:0 6px 24px rgba(59,108,248,0.35);z-index:201;
-  white-space:nowrap;
-}
+.btn-save-res{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#3b6cf8,#7c3aed);color:white;border:none;padding:15px 40px;border-radius:14px;font-size:15px;font-weight:800;font-family:'Nunito',sans-serif;cursor:pointer;box-shadow:0 6px 24px rgba(59,108,248,0.35);z-index:201;white-space:nowrap;}
 .btn-save-res:active{transform:translateX(-50%) scale(0.97);}
 
-/* ─── USTOZ AI MODAL ──────────────────────────────── */
-#aiModal{
-  display:none;position:fixed;inset:0;z-index:300;
-  background:rgba(30,42,74,0.6);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
-  align-items:flex-end;justify-content:center;
-}
-.ai-sheet{
-  background:white;border-radius:24px 24px 0 0;
-  width:100%;max-width:600px;
-  max-height:85vh;display:flex;flex-direction:column;
-  padding:0 0 20px;overflow:hidden;
-  animation:sheetUp .3s cubic-bezier(.4,0,.2,1);
-}
+/* ─── TOP REYTING MODAL ──────────────────────────── */
+#ratingModal{display:none;position:fixed;inset:0;z-index:300;background:rgba(30,42,74,0.6);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);align-items:flex-end;justify-content:center;}
+.rating-sheet{background:white;border-radius:24px 24px 0 0;width:100%;max-width:600px;max-height:80vh;display:flex;flex-direction:column;padding:0 0 24px;overflow:hidden;animation:sheetUp .3s cubic-bezier(.4,0,.2,1);}
 @keyframes sheetUp{from{transform:translateY(100%);}to{transform:translateY(0);}}
-.ai-handle{width:40px;height:4px;background:#e2e8f0;border-radius:4px;margin:12px auto 0;}
-.ai-header{
-  display:flex;align-items:center;gap:12px;
-  padding:14px 18px;border-bottom:1px solid #f1f5f9;
-}
-.ai-robot-wrap{position:relative;}
-.ai-robot{
-  width:52px;height:52px;border-radius:16px;
-  background:linear-gradient(135deg,#7c3aed,#3b6cf8);
-  display:flex;align-items:center;justify-content:center;
-  font-size:26px;flex-shrink:0;
-  box-shadow:0 4px 12px rgba(124,58,237,0.3);
-}
-.ai-online{
-  position:absolute;bottom:0;right:0;
-  width:12px;height:12px;background:#22c55e;
-  border:2px solid white;border-radius:50%;
-}
-.ai-info{}
-.ai-name{font-size:15px;font-weight:800;color:var(--text);}
-.ai-status{font-size:12px;color:#22c55e;font-weight:600;}
-.ai-chat{flex:1;overflow-y:auto;padding:14px 16px;display:flex;flex-direction:column;gap:10px;}
-.ai-bubble{
-  background:var(--ai-bg);border-radius:0 16px 16px 16px;
-  padding:12px 14px;font-size:13.5px;line-height:1.65;color:var(--text);font-weight:600;
-  max-width:92%;border:1px solid rgba(124,58,237,0.1);
-}
-.ai-bubble b{color:var(--ai);}
-.ai-user-bubble{
-  background:var(--primary);color:white;border-radius:16px 0 16px 16px;
-  padding:10px 14px;font-size:13.5px;line-height:1.55;font-weight:600;
-  align-self:flex-end;max-width:85%;
-}
-.ai-typing{display:flex;gap:5px;align-items:center;padding:10px 14px;background:var(--ai-bg);border-radius:0 14px 14px 14px;width:fit-content;border:1px solid rgba(124,58,237,0.1);}
-.ai-dot{width:7px;height:7px;background:var(--ai);border-radius:50%;animation:bounce .9s infinite;}
-.ai-dot:nth-child(2){animation-delay:.2s;}
-.ai-dot:nth-child(3){animation-delay:.4s;}
-@keyframes bounce{0%,100%{transform:translateY(0);}50%{transform:translateY(-5px);}}
-.ai-input-wrap{
-  display:flex;gap:8px;padding:10px 14px 0;
-  border-top:1px solid #f1f5f9;
-}
-.ai-input{
-  flex:1;border:2px solid rgba(124,58,237,0.2);border-radius:12px;
-  padding:10px 14px;font-size:14px;font-family:'Nunito',sans-serif;font-weight:600;
-  outline:none;resize:none;min-height:44px;max-height:100px;
-  color:var(--text);background:var(--ai-bg);
-}
-.ai-input:focus{border-color:var(--ai);}
-.ai-send{
-  width:44px;height:44px;border:none;border-radius:12px;
-  background:var(--ai);color:white;font-size:18px;
-  cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;
-  box-shadow:0 3px 10px rgba(124,58,237,0.3);
-}
-.ai-close-btn{
-  margin:6px 14px 0 auto;display:block;
-  background:none;border:none;font-size:13px;font-weight:700;color:var(--muted);
-  cursor:pointer;font-family:'Nunito',sans-serif;
-}
+.rating-handle{width:40px;height:4px;background:#e2e8f0;border-radius:4px;margin:12px auto 0;}
+.rating-header{padding:14px 18px 10px;border-bottom:1px solid #f1f5f9;}
+.rating-title{font-size:17px;font-weight:900;color:var(--text);display:flex;align-items:center;gap:8px;}
+.rating-subtitle{font-size:12px;color:var(--muted);font-weight:600;margin-top:3px;}
+.rating-tabs{display:flex;gap:6px;padding:10px 16px;}
+.rating-tab{flex:1;padding:8px;border:none;border-radius:10px;font-size:13px;font-weight:700;font-family:'Nunito',sans-serif;cursor:pointer;background:rgba(59,108,248,0.08);color:var(--primary);transition:all .18s;}
+.rating-tab.active{background:var(--primary);color:white;}
+.rating-list{flex:1;overflow-y:auto;padding:0 14px;}
+.rating-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;margin-bottom:6px;background:rgba(59,108,248,0.04);border:1px solid rgba(59,108,248,0.08);}
+.rating-item.me{background:rgba(59,108,248,0.12);border-color:var(--primary);}
+.rating-rank{min-width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900;}
+.rating-name{flex:1;font-size:14px;font-weight:700;color:var(--text);}
+.rating-score{font-size:13px;font-weight:800;color:var(--primary);}
+.rating-pct{font-size:11px;color:var(--muted);font-weight:600;}
+.rating-close-btn{margin:6px 14px 0 auto;display:block;background:none;border:none;font-size:13px;font-weight:700;color:var(--muted);cursor:pointer;font-family:'Nunito',sans-serif;}
+
+/* ─── RASH LIMIT MODAL ──────────────────────────── */
+#rashLimitModal{display:none;position:fixed;inset:0;z-index:400;background:rgba(30,42,74,0.65);backdrop-filter:blur(8px);align-items:center;justify-content:center;}
+.rash-limit-card{background:white;border-radius:20px;padding:28px 22px;max-width:320px;width:90%;text-align:center;animation:pop .35s cubic-bezier(.34,1.56,.64,1);}
+.rash-limit-icon{font-size:52px;margin-bottom:10px;}
+.rash-limit-title{font-size:18px;font-weight:900;color:var(--text);margin-bottom:8px;}
+.rash-limit-sub{font-size:14px;color:var(--muted);font-weight:600;line-height:1.5;margin-bottom:18px;}
+.rash-limit-price{background:linear-gradient(135deg,#3b6cf8,#7c3aed);color:white;border-radius:12px;padding:12px;font-size:16px;font-weight:900;margin-bottom:14px;}
+.rash-limit-btn{width:100%;padding:14px;border:none;border-radius:12px;background:var(--primary);color:white;font-size:15px;font-weight:800;font-family:'Nunito',sans-serif;cursor:pointer;margin-bottom:8px;}
+.rash-limit-cancel{background:none;border:none;font-size:13px;font-weight:700;color:var(--muted);cursor:pointer;font-family:'Nunito',sans-serif;padding:6px;}
+
+/* ─── FREE AI LIMIT NOTICE ─── */
+.ai-limit-notice{background:var(--ai-bg);border:1.5px solid rgba(124,58,237,0.2);border-radius:12px;padding:12px 14px;font-size:13px;font-weight:600;color:var(--ai);line-height:1.5;}
+.ai-limit-notice b{color:var(--ai);}
+
+/* ─── PAID LOCKED NOTICE ─── */
+.paid-locked-card{background:linear-gradient(135deg,rgba(59,108,248,0.08),rgba(124,58,237,0.08));border:2px solid rgba(59,108,248,0.2);border-radius:14px;padding:18px;text-align:center;margin-top:8px;}
+.paid-locked-icon{font-size:38px;margin-bottom:8px;}
+.paid-locked-title{font-size:16px;font-weight:900;color:var(--primary);margin-bottom:6px;}
+.paid-locked-sub{font-size:13px;color:var(--muted);font-weight:600;line-height:1.5;}
 </style>
 </head>
 <body>
+
+<!-- FON: FAN NOMI -->
+<div id="subjectBg"></div>
 
 <!-- LOADING -->
 <div id="loading">
@@ -313,7 +216,7 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-
     <div class="user-avatar" id="userAvatar">A</div>
     <span id="userName">Foydalanuvchi</span>
   </div>
-  <div class="timer-box" id="timerBox">⏱ <span id="timerText">00:00</span></div>
+  <div class="timer-box" id="timerBox">⏱ <span id="timerText">120:00</span></div>
 </div>
 
 <!-- QUESTION NUMBERS -->
@@ -321,9 +224,11 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-
   <div class="qnum-grid" id="qnumGrid"></div>
 </div>
 
-<!-- MARQUEE KANAL -->
-<div class="marquee-wrap" id="marqueeWrap" style="display:none;">
-  <div class="marquee-track" id="marqueeTrack"></div>
+<!-- KANAL BANNER (10 daqiqada bir) -->
+<div id="channelBanner">
+  <button class="ban-close" onclick="closeBanner()">✕</button>
+  <div class="ban-title">📢 @IshtixonKimyo</div>
+  <div class="ban-sub">O'zbekistondagi eng yaxshi kimyo kanali! Hoziroq kuzating! 🔬</div>
 </div>
 
 <!-- QUIZ -->
@@ -349,6 +254,12 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-
   <div class="res-sc" id="resSc">0 / 0 to'g'ri</div>
   <div class="res-bar-bg"><div class="res-bar-fill" id="resBarFill" style="width:0%"></div></div>
   <div class="res-msg" id="resMsg"></div>
+  
+  <!-- TOP REYTING TUGMASI (natijalar ichida) -->
+  <button onclick="openRating()" style="background:linear-gradient(135deg,#3b6cf8,#7c3aed);color:white;border:none;padding:11px 28px;border-radius:12px;font-size:14px;font-weight:800;font-family:'Nunito',sans-serif;cursor:pointer;margin-bottom:16px;box-shadow:0 4px 14px rgba(59,108,248,0.3);">
+    🏆 Top Reytingni ko'rish
+  </button>
+
   <div class="res-section-title">✅ To'g'ri javoblar</div>
   <div class="res-q-list" id="correctList"></div>
   <div class="res-section-title" style="margin-top:20px;">❌ Xato javoblar</div>
@@ -356,27 +267,35 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-
   <button class="btn-save-res" onclick="sendToBot()">✅ Natijani saqlash</button>
 </div>
 
-<!-- USTOZ AI MODAL -->
-<div id="aiModal" onclick="closeAIIfOutside(event)">
-  <div class="ai-sheet" id="aiSheet">
-    <div class="ai-handle"></div>
-    <div class="ai-header">
-      <div class="ai-robot-wrap">
-        <div class="ai-robot">🤖</div>
-        <div class="ai-online"></div>
-      </div>
-      <div class="ai-info">
-        <div class="ai-name">Ustoz AI</div>
-        <div class="ai-status">● Online — yordam berishga tayyor</div>
-      </div>
+<!-- TOP REYTING MODAL -->
+<div id="ratingModal" onclick="closeRatingIfOutside(event)">
+  <div class="rating-sheet" id="ratingSheet">
+    <div class="rating-handle"></div>
+    <div class="rating-header">
+      <div class="rating-title">🏆 Top Reyting</div>
+      <div class="rating-subtitle" id="ratingSubtitle">Yuklanmoqda...</div>
     </div>
-    <div class="ai-chat" id="aiChat"></div>
-    <button class="ai-close-btn" onclick="closeAI()">✕ Yopish</button>
-    <div class="ai-input-wrap">
-      <textarea class="ai-input" id="aiInput" placeholder="Savolingizni yozing..." rows="1"
-        onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendAIMsg();}"></textarea>
-      <button class="ai-send" onclick="sendAIMsg()">➤</button>
+    <div class="rating-tabs">
+      <button class="rating-tab active" onclick="switchRatingTab('week',this)">📅 Haftalik</button>
+      <button class="rating-tab" onclick="switchRatingTab('month',this)">🗓 Oylik</button>
+      <button class="rating-tab" onclick="switchRatingTab('all',this)">🌐 Umumiy</button>
     </div>
+    <div class="rating-list" id="ratingList">
+      <div style="text-align:center;padding:30px;color:var(--muted);font-weight:600;">⏳ Yuklanmoqda...</div>
+    </div>
+    <button class="rating-close-btn" onclick="closeRating()">✕ Yopish</button>
+  </div>
+</div>
+
+<!-- RASH LIMIT MODAL (Bepul 3 marta, keyin to'lov) -->
+<div id="rashLimitModal">
+  <div class="rash-limit-card">
+    <div class="rash-limit-icon">🔒</div>
+    <div class="rash-limit-title">Bepul limit tugadi</div>
+    <div class="rash-limit-sub">RASH tahlilini 3 marta bepul tekshirdingiz. Keyingi tekshiruv uchun to'lov qiling.</div>
+    <div class="rash-limit-price">💳 1 tekshiruv = <b>10 000 so'm</b></div>
+    <button class="rash-limit-btn" onclick="payForRash()">💳 To'lash va davom etish</button>
+    <button class="rash-limit-cancel" onclick="document.getElementById('rashLimitModal').style.display='none'">Bekor qilish</button>
   </div>
 </div>
 
@@ -388,29 +307,26 @@ const tg = window.Telegram.WebApp;
 tg.expand();
 tg.enableClosingConfirmation();
 
-const GEMINI_KEY = "AIzaSyBAJgfL8NHxjQRXeA67NmgHsph1x74LVI8";
-const REPO_RAW   = "https://raw.githubusercontent.com/toychijunaydullayev-del/WepApp/main/";
-const CHANNEL    = "@IshtixonKimyo";
+const CHANNEL = "@IshtixonKimyo";
 
 let questions  = [];
-let answers    = {};
+let answers    = {};   // testlar uchun: {idx: value}
 let currentIdx = 0;
 let isDone     = false;
-let timerSec   = 0;
+let timerSec   = 120 * 60; // 120 daqiqa orqaga
 let timerInt   = null;
 let finalScore = 0;
+let ratingPeriod = 'week';
+let aiUsedCount  = 0; // Bepul AI ishlatish soni (max 3)
 
-// Fayl nomi va mode
 const params   = new URLSearchParams(window.location.search);
 const fileName = params.get('test') || '';
 const mode     = fileName.toLowerCase().startsWith('paid') ? 'paid' : 'free';
 
-// Foydalanuvchi ismi (Telegram'dan)
-const tgUser   = tg.initDataUnsafe?.user;
-const userName = tgUser ? (tgUser.first_name + (tgUser.last_name ? ' '+tgUser.last_name : '')) : 'Foydalanuvchi';
+const tgUser      = tg.initDataUnsafe?.user;
+const userName    = tgUser ? (tgUser.first_name + (tgUser.last_name ? ' '+tgUser.last_name : '')) : 'Foydalanuvchi';
 const userInitial = userName.charAt(0).toUpperCase();
 
-// Subject nomi
 function getSubject(fn){
   if(!fn) return 'Test';
   const p = fn.replace('.json','').split('_');
@@ -424,36 +340,49 @@ const subjectName = getSubject(fileName);
 const LETTERS = ['A','B','C','D','E','F'];
 
 /* ═══════════════════════════════════════════════
-   INIT
+   INIT UI
 ═══════════════════════════════════════════════ */
-document.getElementById('userName').textContent  = userName;
-document.getElementById('userAvatar').textContent = userInitial;
+document.getElementById('userName').textContent   = userName;
+document.getElementById('userAvatar').textContent  = userInitial;
+// Fan nomi fon yozuvi
+if(subjectName && subjectName !== 'Test'){
+  document.getElementById('subjectBg').textContent = subjectName.toUpperCase();
+}
 
-// Marquee — 24 marta kanal
-(function buildMarquee(){
-  const track = document.getElementById('marqueeTrack');
-  const text = `<span>📢</span> ${CHANNEL} — O'zbekistondagi eng yaxshi kimyo kanali! Hoziroq kuzating! 🔬`;
-  let html = '';
-  for(let i=0;i<48;i++) html += `<div class="marquee-item"><span>★</span>${text}</div>`;
-  track.innerHTML = html;
-})();
+/* ═══════════════════════════════════════════════
+   KANAL BANNER: har 10 daqiqada ko'rinadi, 1 daqiqada yoqiladi
+═══════════════════════════════════════════════ */
+function showBanner(){
+  const b = document.getElementById('channelBanner');
+  b.style.display='block';
+  setTimeout(()=>{ b.style.display='none'; }, 60000); // 1 daqiqa
+}
+function closeBanner(){ document.getElementById('channelBanner').style.display='none'; }
+setInterval(showBanner, 10 * 60 * 1000); // har 10 daqiqada
 
 /* ═══════════════════════════════════════════════
    LOAD TEST
 ═══════════════════════════════════════════════ */
+const REPO_RAW = "https://raw.githubusercontent.com/toychijunaydullayev-del/WepApp/main/";
+
 fetch(REPO_RAW + fileName)
   .then(r=>{ if(!r.ok) throw new Error('Fayl topilmadi'); return r.json(); })
   .then(data=>{
     questions = data;
     document.getElementById('loading').style.display = 'none';
-    ['mainHeader','qnumWrap','quizUI','navBar','marqueeWrap']
-      .forEach(id=>{ document.getElementById(id).style.display=''; });
     document.getElementById('mainHeader').style.display = 'flex';
-    document.getElementById('navBar').style.display     = 'flex';
-    document.getElementById('marqueeWrap').style.display = 'block';
+    document.getElementById('qnumWrap').style.display = '';
+    document.getElementById('quizUI').style.display = '';
+    document.getElementById('navBar').style.display = 'flex';
     buildQnumGrid();
     startTimer();
     render();
+    // Pullik test bo'lsa va 2 daqiqadan keyin xabar
+    if(mode === 'paid'){
+      setTimeout(()=>{
+        tg.showAlert('ℹ️ Bu pullik test. Faqat 1 marta ishlash imkoniyati bor. Diqqat bilan ishlang!');
+      }, 2000);
+    }
   })
   .catch(e=>{
     document.getElementById('loading').innerHTML=
@@ -486,28 +415,38 @@ function updateQnumGrid(){
     if(!btn) return;
     btn.className = 'qnum-btn';
     if(isDone){
-      const correct = (questions[i].correct||'').toString().toLowerCase().trim();
-      const given   = (answers[i]||'').toString().toLowerCase().trim();
-      if(given === correct) btn.classList.add('correct-mark');
-      else if(given)        btn.classList.add('wrong-mark');
+      const q = questions[i];
+      if((q.type||'test') === 'open'){
+        if(answers[i] !== undefined) btn.classList.add('answered');
+      } else {
+        const correct = (q.correct||'').toString().toLowerCase().trim();
+        const given   = (answers[i]||'').toString().toLowerCase().trim();
+        if(given === correct) btn.classList.add('correct-mark');
+        else if(given)        btn.classList.add('wrong-mark');
+      }
     } else {
-      if(answers[i] !== undefined) btn.classList.add('answered');
+      if(answers[i] !== undefined && answers[i] !== '') btn.classList.add('answered');
     }
     if(i === currentIdx) btn.classList.add('active');
   });
 }
 
 /* ═══════════════════════════════════════════════
-   TIMER
+   TIMER — orqaga sanash (120 daqiqa)
 ═══════════════════════════════════════════════ */
 function startTimer(){
+  updateTimerDisplay();
   timerInt = setInterval(()=>{
-    timerSec++;
-    const m = String(Math.floor(timerSec/60)).padStart(2,'0');
-    const s = String(timerSec%60).padStart(2,'0');
-    document.getElementById('timerText').textContent = `${m}:${s}`;
-    if(timerSec > 2700) document.getElementById('timerBox').classList.add('warn');
+    timerSec--;
+    updateTimerDisplay();
+    if(timerSec <= 0){ clearInterval(timerInt); finalize(); }
+    if(timerSec <= 300) document.getElementById('timerBox').classList.add('warn');
   },1000);
+}
+function updateTimerDisplay(){
+  const m = String(Math.floor(timerSec/60)).padStart(2,'0');
+  const s = String(timerSec%60).padStart(2,'0');
+  document.getElementById('timerText').textContent = `${m}:${s}`;
 }
 
 /* ═══════════════════════════════════════════════
@@ -517,74 +456,89 @@ function render(){
   if(!questions.length) return;
   const q       = questions[currentIdx];
   const total   = questions.length;
+  const qType   = (q.type||'test').toLowerCase().trim(); // 'test' yoki 'open'
   const correct = (q.correct||'').toString().toLowerCase().trim();
   const userAns = answers[currentIdx];
 
   document.getElementById('qLabel').textContent = `SAVOL ${currentIdx+1} / ${total}`;
   document.getElementById('qText').innerHTML    = q.q || '';
 
-  // Rasm
   const imgEl = document.getElementById('qImg');
-  if(q.image && q.image.startsWith('http')){
-    imgEl.src = q.image; imgEl.style.display='block';
-  } else { imgEl.style.display='none'; }
+  if(q.image && q.image.startsWith('http')){ imgEl.src=q.image; imgEl.style.display='block'; }
+  else { imgEl.style.display='none'; }
 
-  // Options
   const wrap = document.getElementById('optionsWrap');
   wrap.innerHTML = '';
-  (q.options||[]).forEach((val,i)=>{
-    const valStr = (val||'').toString();
-    const valLow = valStr.toLowerCase().trim();
-    const isSelected = userAns === valStr;
-    const isCorrect  = valLow === correct;
 
-    const div = document.createElement('div');
-    div.className = 'option';
+  if(qType === 'open'){
+    // === YOPIQ TEST: Matn kiritish maydoni ===
+    const oDiv = document.createElement('div');
+    oDiv.className = 'open-answer-wrap';
+    const textarea = document.createElement('textarea');
+    textarea.className = 'open-answer-input';
+    textarea.placeholder = 'Javobingizni shu yerga yozing...';
+    textarea.value = userAns !== undefined ? userAns : '';
+    if(isDone) textarea.disabled = true;
+    const saveBtn = document.createElement('button');
+    saveBtn.className = 'open-save-btn';
+    saveBtn.textContent = isDone ? '✅ Saqlangan' : '💾 Javobni saqlash';
+    if(isDone) saveBtn.disabled = true;
+    saveBtn.onclick = ()=>{
+      const val = textarea.value.trim();
+      if(!val){ tg.showAlert('⚠️ Javob bo\'sh!'); return; }
+      answers[currentIdx] = val;
+      saveBtn.textContent = '✅ Saqlangan';
+      saveBtn.disabled = true;
+      textarea.disabled = true;
+      updateQnumGrid();
+    };
+    oDiv.appendChild(textarea);
+    oDiv.appendChild(saveBtn);
+    wrap.appendChild(oDiv);
+  } else {
+    // === ODDIY TEST: Variantlar ===
+    (q.options||[]).forEach((val,i)=>{
+      const valStr = (val||'').toString();
+      const valLow = valStr.toLowerCase().trim();
+      const isSelected = userAns === valStr;
+      const isCorrect  = valLow === correct;
 
-    if(isDone){
-      if(isCorrect)        div.classList.add('correct-r');
-      else if(isSelected)  div.classList.add('wrong-r');
-      else                 div.classList.add('dim-r');
-    } else if(isSelected){
-      div.classList.add('answered-ok');
+      const div = document.createElement('div');
+      div.className = 'option';
+      if(isDone){
+        if(isCorrect)       div.classList.add('correct-r');
+        else if(isSelected) div.classList.add('wrong-r');
+        else                div.classList.add('dim-r');
+      } else if(isSelected){ div.classList.add('answered-ok'); }
+
+      const lt = document.createElement('span'); lt.className='opt-letter'; lt.textContent=LETTERS[i]||i+1;
+      const tx = document.createElement('span'); tx.textContent=valStr;
+      div.appendChild(lt); div.appendChild(tx);
+      if(!isDone) div.onclick=()=>{ answers[currentIdx]=valStr; render(); updateQnumGrid(); };
+      wrap.appendChild(div);
+    });
+
+    // === PULLIK TESTDA "USTOZ AI" O'RNIGA YOPIQ BILDIRISHNOMA ===
+    if(mode === 'paid' && !isDone){
+      // Hech narsa qo'shmaymiz
     }
-
-    const lt = document.createElement('span');
-    lt.className = 'opt-letter';
-    lt.textContent = LETTERS[i]||i+1;
-
-    const tx = document.createElement('span');
-    tx.textContent = valStr;
-
-    div.appendChild(lt); div.appendChild(tx);
-    if(!isDone){
-      div.onclick=()=>{ answers[currentIdx]=valStr; render(); updateQnumGrid(); };
-    }
-    wrap.appendChild(div);
-  });
+  }
 
   // Nav tugmalari
   const btnPrev = document.getElementById('btnPrev');
   const btnNext = document.getElementById('btnNext');
   btnPrev.style.visibility = currentIdx===0 ? 'hidden':'visible';
-
   if(isDone){
     btnNext.textContent = currentIdx<total-1 ? 'Keyingi →':'📊 Natijani saqlash';
     btnNext.className   = currentIdx<total-1 ? 'btn-nav btn-next':'btn-nav btn-finish';
-    if(currentIdx===total-1) btnNext.onclick = sendToBot;
-    else btnNext.onclick = ()=>goTo(currentIdx+1);
+    btnNext.onclick     = currentIdx<total-1 ? ()=>goTo(currentIdx+1) : sendToBot;
   } else {
     if(currentIdx===total-1){
-      btnNext.textContent = '✅ Testni yakunlash';
-      btnNext.className   = 'btn-nav btn-finish';
-      btnNext.onclick     = nextOrFinish;
+      btnNext.textContent = '✅ Testni yakunlash'; btnNext.className='btn-nav btn-finish'; btnNext.onclick=nextOrFinish;
     } else {
-      btnNext.textContent = 'Keyingi →';
-      btnNext.className   = 'btn-nav btn-next';
-      btnNext.onclick     = nextOrFinish;
+      btnNext.textContent = 'Keyingi →'; btnNext.className='btn-nav btn-next'; btnNext.onclick=nextOrFinish;
     }
   }
-
   updateQnumGrid();
   window.scrollTo({top:0,behavior:'smooth'});
 }
@@ -592,23 +546,21 @@ function render(){
 /* ═══════════════════════════════════════════════
    NAVIGATION
 ═══════════════════════════════════════════════ */
-function goTo(idx){
-  if(idx<0||idx>=questions.length) return;
-  currentIdx=idx; render();
-}
+function goTo(idx){ if(idx<0||idx>=questions.length) return; currentIdx=idx; render(); }
 function nextOrFinish(){
   if(isDone){ goTo(currentIdx+1); return; }
   if(currentIdx < questions.length-1){ goTo(currentIdx+1); return; }
-  const unanswered = questions.length - Object.keys(answers).length;
+  const unanswered = questions.filter((_,i)=>answers[i]===undefined||answers[i]==='').length;
   if(unanswered>0){
-    tg.showConfirm(`⚠️ ${unanswered} ta savolga javob bermagansiz. Shunga qaramasdan yakunlaysizmi?`,
-      ok=>{ if(ok) finalize(); });
+    tg.showConfirm(`⚠️ ${unanswered} ta savolga javob bermagansiz. Shunga qaramasdan yakunlaysizmi?`, ok=>{ if(ok) finalize(); });
   } else { finalize(); }
 }
 
 /* ═══════════════════════════════════════════════
    FINALIZE
 ═══════════════════════════════════════════════ */
+function getElapsedSec(){ return 120*60 - timerSec; }
+
 function finalize(){
   isDone = true;
   clearInterval(timerInt);
@@ -616,12 +568,14 @@ function finalize(){
   const total = questions.length;
 
   questions.forEach((q,i)=>{
+    const qType = (q.type||'test').toLowerCase();
+    if(qType === 'open') return; // Ochiq savollar hisoblanmaydi
     const c = (q.correct||'').toString().toLowerCase().trim();
     const g = (answers[i]||'').toString().toLowerCase().trim();
     if(g===c) finalScore++;
   });
-
-  const pct = total>0 ? Math.round((finalScore/total)*100) : 0;
+  const closedCount = questions.filter(q=>(q.type||'test')!=='open').length;
+  const pct = closedCount>0 ? Math.round((finalScore/closedCount)*100) : 0;
   let icon,msg;
   if(pct>=90){icon='🏆';msg='Ajoyib natija! Bilimingiz zo\'r darajada! 🚀';}
   else if(pct>=75){icon='🌟';msg='Yaxshi! Yana biroz mashq va mukammal bo\'lasiz! 💪';}
@@ -630,193 +584,204 @@ function finalize(){
 
   document.getElementById('resIcon').textContent = icon;
   document.getElementById('resPct').textContent  = pct+'%';
-  document.getElementById('resSc').textContent   = `${finalScore} / ${total} to'g'ri`;
+  document.getElementById('resSc').textContent   = `${finalScore} / ${closedCount} to'g'ri`;
   document.getElementById('resMsg').textContent  = msg;
 
-  // To'g'ri/xato savollar ro'yxati
   const correctList = document.getElementById('correctList');
   const wrongList   = document.getElementById('wrongList');
   correctList.innerHTML=''; wrongList.innerHTML='';
 
   questions.forEach((q,i)=>{
+    const qType = (q.type||'test').toLowerCase();
     const correctAns = (q.correct||'').toString();
-    const userAns    = (answers[i]||'');
-    const given      = userAns.toString().toLowerCase().trim();
-    const correct2   = correctAns.toLowerCase().trim();
-    const isOk       = given===correct2;
-
-    const div = document.createElement('div');
-    div.className = `res-q-item ${isOk?'ok':'bad'}`;
-
-    const num = document.createElement('div');
-    num.className = 'res-q-num';
-    num.textContent = `${isOk?'✅':'❌'} ${i+1}-savol`;
-
-    const qtext = document.createElement('div');
-    qtext.style.cssText='font-size:13px;line-height:1.5;';
-    qtext.innerHTML = (q.q||'').substring(0,120) + ((q.q||'').length>120?'...':'');
-
-    div.appendChild(num);
-    div.appendChild(qtext);
-
+    const userAns    = answers[i]||'';
+    if(qType === 'open'){
+      // Ochiq savolni ko'rsatish
+      const div = document.createElement('div');
+      div.className='res-q-item';
+      div.style.background='rgba(59,108,248,0.05)';div.style.border='1.5px solid rgba(59,108,248,0.15)';
+      div.innerHTML=`<div class="res-q-num">📝 ${i+1}-savol (Ochiq)</div>
+        <div style="font-size:13px">${(q.q||'').substring(0,100)}</div>
+        <div style="color:var(--primary);font-size:13px">📝 Javobingiz: ${userAns||'Yozilmagan'}</div>`;
+      correctList.appendChild(div);
+      return;
+    }
+    const given   = userAns.toString().toLowerCase().trim();
+    const correct2= correctAns.toLowerCase().trim();
+    const isOk    = given===correct2;
+    const div = document.createElement('div'); div.className=`res-q-item ${isOk?'ok':'bad'}`;
+    const num = document.createElement('div'); num.className='res-q-num'; num.textContent=`${isOk?'✅':'❌'} ${i+1}-savol`;
+    const qtext = document.createElement('div'); qtext.style.cssText='font-size:13px;line-height:1.5;';
+    qtext.innerHTML=(q.q||'').substring(0,120)+((q.q||'').length>120?'...':'');
+    div.appendChild(num); div.appendChild(qtext);
     if(isOk){
-      const c = document.createElement('div');
-      c.className='res-q-correct';
-      c.textContent = `✅ To'g'ri: ${correctAns}`;
-      div.appendChild(c);
+      const c=document.createElement('div'); c.className='res-q-correct'; c.textContent=`✅ To'g'ri: ${correctAns}`; div.appendChild(c);
     } else {
-      const ua = document.createElement('div');
-      ua.className='res-q-user';
-      ua.textContent = userAns ? `❌ Siz: ${userAns}` : '⚪ Javob berilmagan';
-      const ca = document.createElement('div');
-      ca.className='res-q-correct';
-      ca.textContent = `✅ To'g'ri: ${correctAns}`;
-      div.appendChild(ua);
-      div.appendChild(ca);
-
-      // AI tugmasi
-      const aib = document.createElement('button');
-      aib.className='ai-mini-btn';
-      aib.innerHTML='🤖 Ustoz AI';
-      aib.onclick=(()=>{
-        const qi=i;
-        return ()=>openAI(questions[qi].q, userAns, correctAns);
-      })();
-      div.appendChild(aib);
+      const ua=document.createElement('div'); ua.className='res-q-user'; ua.textContent=userAns?`❌ Siz: ${userAns}`:'⚪ Javob berilmagan'; div.appendChild(ua);
+      const ca=document.createElement('div'); ca.className='res-q-correct'; ca.textContent=`✅ To'g'ri: ${correctAns}`; div.appendChild(ca);
+      
+      // === BEPUL TEST: 3 ta AI, keyin "pullik testda to'liq" ===
+      if(mode === 'free'){
+        if(aiUsedCount < 3){
+          const aib = document.createElement('div');
+          aib.className='ai-limit-notice';
+          aib.innerHTML=`🤖 <b>Ustoz AI</b> — ${3-aiUsedCount} ta bepul tekshiruv qoldi`;
+          div.appendChild(aib);
+        } else {
+          const lk=document.createElement('div'); lk.className='ai-limit-notice';
+          lk.innerHTML='🔒 Bepul AI limitingiz tugadi. <b>Pullik testlarda to\'liq ishlaydi.</b>';
+          div.appendChild(lk);
+        }
+      } else {
+        // Pullik testda — to'liq AI ishlaydi
+        const aib=document.createElement('button'); aib.className='ai-mini-btn';
+        aib.style.cssText='background:#7c3aed;color:white;border:none;padding:7px 14px;border-radius:8px;font-size:12.5px;font-weight:700;font-family:Nunito,sans-serif;cursor:pointer;margin-top:4px;display:flex;align-items:center;gap:6px;';
+        aib.innerHTML='🤖 Ustoz AI (to\'liq)';
+        aib.onclick=(()=>{ const qi=i; return ()=>openAI(questions[qi].q, userAns, correctAns); })();
+        div.appendChild(aib);
+      }
     }
     (isOk?correctList:wrongList).appendChild(div);
   });
 
   if(correctList.children.length===0) correctList.innerHTML='<div style="color:var(--muted);font-size:13px;padding:8px;">—</div>';
-  if(wrongList.children.length===0)   wrongList.innerHTML='<div style="color:var(--muted);font-size:13px;padding:8px;">Barcha savollar to\'g\'ri! 🎉</div>';
+  if(wrongList.children.length===0) wrongList.innerHTML='<div style="color:var(--muted);font-size:13px;padding:8px;">Barcha savollar to\'g\'ri! 🎉</div>';
 
   document.getElementById('resultOverlay').style.display='flex';
   setTimeout(()=>{ document.getElementById('resBarFill').style.width=pct+'%'; },200);
+  updateQnumGrid(); render();
 
-  updateQnumGrid();
-  render(); // Nav ni yangilash
+  // Reyting ma'lumotlarini yuklash (natijalar paydo bo'lganda)
+  loadRating('week');
 }
 
 /* ═══════════════════════════════════════════════
-   SEND TO BOT
+   SEND TO BOT — natijani saqlash
 ═══════════════════════════════════════════════ */
 function sendToBot(){
   const wrong=[];
-  questions.forEach((q,i)=>{
+  const closedQs = questions.filter((q,i)=>{
+    const qType=(q.type||'test').toLowerCase();
+    if(qType==='open') return false;
     const c=(q.correct||'').toString().toLowerCase().trim();
     const g=(answers[i]||'').toString().toLowerCase().trim();
     if(g!==c) wrong.push(i+1);
+    return true;
   });
+  const openAnswers={};
+  questions.forEach((q,i)=>{ if((q.type||'test')==='open') openAnswers[i]=answers[i]||''; });
+
   tg.sendData(JSON.stringify({
-    action:'test_result', score:finalScore,
-    total:questions.length, subject:subjectName,
-    file_name:fileName, time_sec:timerSec, wrong_q:wrong
+    action:'test_result',
+    score: finalScore,
+    total: closedQs.length,
+    subject: subjectName,
+    file_name: fileName,
+    time_sec: getElapsedSec(),
+    wrong_q: wrong,
+    open_answers: openAnswers,
+    mode: mode
   }));
   tg.close();
 }
 
 /* ═══════════════════════════════════════════════
-   USTOZ AI MODAL
+   TOP REYTING MODAL
 ═══════════════════════════════════════════════ */
+// Reyting ma'lumotlarini bot orqali olish uchun postMessage yoki 
+// oddiy namuna ko'rsatamiz (real ma'lumot botdan keladi)
+let ratingData = { week:[], month:[], all:[] };
+
+function openRating(){
+  document.getElementById('ratingModal').style.display='flex';
+  document.getElementById('ratingSubtitle').textContent = subjectName + ' • ' + (ratingPeriod==='week'?'Haftalik':ratingPeriod==='month'?'Oylik':'Umumiy') + ' reyting';
+  renderRatingList(ratingPeriod);
+  // Botga reyting so'rovi yuborish
+  tg.sendData(JSON.stringify({ action:'get_rating', subject:subjectName, period:ratingPeriod }));
+}
+function closeRating(){ document.getElementById('ratingModal').style.display='none'; }
+function closeRatingIfOutside(e){ if(e.target===document.getElementById('ratingModal')) closeRating(); }
+
+function switchRatingTab(period, btn){
+  ratingPeriod = period;
+  document.querySelectorAll('.rating-tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  renderRatingList(period);
+  tg.sendData(JSON.stringify({ action:'get_rating', subject:subjectName, period:period }));
+}
+
+function loadRating(period){
+  // Real ma'lumot botdan keladi; hozircha bo'sh holat
+  renderRatingList(period);
+}
+
+function renderRatingList(period){
+  const list = document.getElementById('ratingList');
+  const data = ratingData[period] || [];
+  const myName = userName;
+  
+  document.getElementById('ratingSubtitle').textContent = subjectName + ' — ' + (period==='week'?'Haftalik':period==='month'?'Oylik':'Umumiy');
+
+  if(!data.length){
+    list.innerHTML='<div style="text-align:center;padding:30px;color:var(--muted);font-weight:600;font-size:13px;">📊 Ma\'lumotlar yuklanmoqda...<br><small>Natijani saqlash tugmasini bosing</small></div>';
+    return;
+  }
+  list.innerHTML='';
+  data.forEach((row,i)=>{
+    const isMe = row.name === myName;
+    const div=document.createElement('div');
+    div.className='rating-item'+(isMe?' me':'');
+    const medal = i===0?'🥇':i===1?'🥈':i===2?'🥉':`<b>${i+1}</b>`;
+    const pct = row.total>0?Math.round((row.score/row.total)*100):0;
+    div.innerHTML=`<span class="rating-rank">${medal}</span>
+      <span class="rating-name">${row.name}${isMe?' <small style="color:var(--primary)">(Siz)</small>':''}</span>
+      <div style="text-align:right"><div class="rating-score">${row.score}/${row.total}</div><div class="rating-pct">${pct}%</div></div>`;
+    list.appendChild(div);
+  });
+}
+
+// Botdan reyting ma'lumotlari kelsa (Telegram WebApp onEvent orqali)
+tg.onEvent('message', function(msg){
+  try{
+    const d = JSON.parse(msg);
+    if(d.action==='rating_data'){
+      ratingData = d.data || { week:[], month:[], all:[] };
+      renderRatingList(ratingPeriod);
+    }
+  }catch(e){}
+});
+
+/* ═══════════════════════════════════════════════
+   USTOZ AI (Faqat pullik testlarda to'liq)
+═══════════════════════════════════════════════ */
+const GEMINI_KEY = "AIzaSyBAJgfL8NHxjQRXeA67NmgHsph1x74LVI8";
 let aiCurrentQ='', aiCurrentU='', aiCurrentC='';
 
 function openAI(q, userAns, correctAns){
-  aiCurrentQ = q||'';
-  aiCurrentU = userAns||'';
-  aiCurrentC = correctAns||'';
-
-  const chat = document.getElementById('aiChat');
-  chat.innerHTML='';
-
-  // Bot salomlashadi
-  addAIBubble(
-    `Assalomu alaykum, <b>${userName}</b>! 👋<br><br>` +
-    `Men <b>Ustoz AI</b> — sizga testdagi qiyin savollarni tushuntirishga yordam beraman.<br><br>` +
-    `Siz qaysi savolning qaysi qismini tushunmadingiz? Qanday yordam kerak?`
-  );
-
-  // Savol haqida izoh
-  if(q){
-    addAIBubble(
-      `📋 <b>Siz tanlagan savol:</b><br>${q.substring(0,120)}${q.length>120?'...':''}<br><br>`+
-      `<b>Sizning javobingiz:</b> ${userAns||'Javob berilmagan'}<br>`+
-      `<b>To'g'ri javob:</b> ${correctAns}`
-    );
+  if(mode === 'free' && aiUsedCount >= 3){
+    tg.showAlert('🔒 Bepul testda 3 ta AI tekshiruv limitingiz tugadi.\n\nPullik testlarda Ustoz AI to\'liq ishlaydi!');
+    return;
   }
-
-  document.getElementById('aiModal').style.display='flex';
-  document.getElementById('aiInput').focus();
-}
-function closeAI(){
-  document.getElementById('aiModal').style.display='none';
-  document.getElementById('aiChat').innerHTML='';
-}
-function closeAIIfOutside(e){
-  if(e.target===document.getElementById('aiModal')) closeAI();
+  aiCurrentQ=q||''; aiCurrentU=userAns||''; aiCurrentC=correctAns||'';
+  aiUsedCount++;
+  // Sodda tushuntirish: Gemini API orqali inline javob
+  tg.showAlert(`🤖 Ustoz AI\n\nSavol: ${(q||'').substring(0,80)}...\nSizning javobingiz: ${userAns||'Berilmagan'}\nTo\'g\'ri javob: ${correctAns}\n\n⏳ To\'liq tushuntirish uchun botdagi Ustoz AI bo\'limidan foydalaning.`);
 }
 
-function addAIBubble(html){
-  const chat = document.getElementById('aiChat');
-  const b = document.createElement('div');
-  b.className='ai-bubble';
-  b.innerHTML=html;
-  chat.appendChild(b);
-  chat.scrollTop=chat.scrollHeight;
-}
-function addUserBubble(text){
-  const chat=document.getElementById('aiChat');
-  const b=document.createElement('div');
-  b.className='ai-user-bubble';
-  b.textContent=text;
-  chat.appendChild(b);
-  chat.scrollTop=chat.scrollHeight;
-}
-function addTyping(){
-  const chat=document.getElementById('aiChat');
-  const t=document.createElement('div');
-  t.id='aiTyping';t.className='ai-typing';
-  t.innerHTML='<div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div>';
-  chat.appendChild(t);
-  chat.scrollTop=chat.scrollHeight;
-}
-function removeTyping(){
-  const t=document.getElementById('aiTyping');
-  if(t) t.remove();
-}
-
-async function sendAIMsg(){
-  const inp=document.getElementById('aiInput');
-  const userMsg=inp.value.trim();
-  if(!userMsg) return;
-  inp.value='';
-  addUserBubble(userMsg);
-
-  addTyping();
-
-  const systemCtx = aiCurrentQ
-    ? `Savol: ${aiCurrentQ}\nO'quvchi javobi: ${aiCurrentU}\nTo'g'ri javob: ${aiCurrentC}\n\n`
-    : '';
-
-  const prompt =
-    `Sen tajribali o'zbek tili ustozisan. Foydalanuvchi ismi: ${userName}.\n`+
-    systemCtx+
-    `Foydalanuvchi savoli: ${userMsg}\n\n`+
-    `Foydalanuvchiga "${userName}" deb murojaat qilib, o'zbek tilida, qisqa, ilmiy va tushunarli javob ber. 3-5 gapdan oshmasin.`;
-
-  try{
-    const resp = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_KEY}`,
-      { method:'POST', headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({contents:[{parts:[{text:prompt}]}]}) }
-    );
-    const data = await resp.json();
-    const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || 'Kechirasiz, javob olinmadi.';
-    removeTyping();
-    addAIBubble(text.replace(/\*\*(.*?)\*\*/g,'<b>$1</b>').replace(/\n/g,'<br>'));
-  } catch(e){
-    removeTyping();
-    addAIBubble('⚠️ Xatolik yuz berdi. Qaytadan urinib ko\'ring.');
+/* ═══════════════════════════════════════════════
+   RASH LIMIT (3 bepul, keyin 10000 so'm)
+═══════════════════════════════════════════════ */
+// Bu funksiya bot orqali chaqiriladi; WebApp'da faqat bildirishnoma
+function checkRashLimit(used){
+  if(used >= 3){
+    document.getElementById('rashLimitModal').style.display='flex';
   }
+}
+function payForRash(){
+  document.getElementById('rashLimitModal').style.display='none';
+  tg.sendData(JSON.stringify({ action:'pay_rash', amount:10000 }));
+  tg.showAlert('💳 To\'lov uchun botga o\'tilmoqda...');
+  tg.close();
 }
 </script>
 </body>
