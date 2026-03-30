@@ -2,128 +2,746 @@
 <html lang="uz">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>Rash Tekshiruv Platformasi</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <title>RASH Tekshiruv</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
-        :root { --bg: #f8fafc; --primary: #0088cc; --success: #22c55e; --error: #ef4444; }
-        body { font-family: sans-serif; background: var(--bg); margin: 0; padding: 0; }
-        .header { background: white; padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-        .container { padding: 15px; padding-bottom: 140px; }
-        .question-card { background: #fff; padding: 20px; border-radius: 15px; border: 1px solid #e2e8f0; margin-bottom: 10px; }
-        .option { background: white; padding: 15px; border-radius: 12px; margin-top: 10px; border: 2px solid #e2e8f0; }
-        .option.selected { border-color: var(--primary); background: #f0f9ff; }
-        .option.correct-result { border-color: var(--success); background: #dcfce7; color: #166534; }
-        .option.wrong-result { border-color: var(--error); background: #fee2e2; color: #991b1b; }
-        .ai-btn { background: #8b5cf6; color: white; border: none; padding: 12px; border-radius: 8px; margin-top: 10px; width: 100%; font-weight: bold; }
-        .ai-response-area { margin-top: 10px; padding: 12px; background: #f5f3ff; border-left: 4px solid #8b5cf6; border-radius: 4px; font-size: 14px; display: none; }
-        #resultOverlay { display: none; position: fixed; inset: 0; background: white; z-index: 1000; flex-direction: column; align-items: center; justify-content: center; padding: 20px; text-align: center; }
+        :root {
+            --bg: #f0f4ff;
+            --card: #ffffff;
+            --primary: #3b6cf8;
+            --primary-light: #eef2ff;
+            --success: #16a34a;
+            --success-light: #dcfce7;
+            --error: #dc2626;
+            --error-light: #fee2e2;
+            --ai: #7c3aed;
+            --ai-light: #f5f3ff;
+            --text: #1e293b;
+            --muted: #64748b;
+            --border: #e2e8f0;
+            --shadow: 0 4px 20px rgba(59,108,248,0.08);
+            --radius: 16px;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* ── HEADER ── */
+        .header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: white;
+            padding: 10px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        }
+        .header-left { display: flex; align-items: center; gap: 8px; }
+        .subject-badge {
+            background: var(--primary-light);
+            color: var(--primary);
+            font-size: 12px;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 20px;
+            max-width: 140px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .q-counter {
+            font-size: 13px;
+            color: var(--muted);
+            font-weight: 600;
+        }
+        #timerBox {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-weight: 800;
+            font-size: 15px;
+            color: var(--primary);
+            background: var(--primary-light);
+            padding: 5px 12px;
+            border-radius: 20px;
+        }
+        #timerBox.warn { color: var(--error); background: var(--error-light); }
+
+        /* ── PROGRESS ── */
+        .progress-wrap {
+            background: white;
+            padding: 8px 16px;
+            border-bottom: 1px solid var(--border);
+        }
+        .progress-bar-bg {
+            background: #e8edff;
+            border-radius: 10px;
+            height: 6px;
+            overflow: hidden;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3b6cf8, #7c3aed);
+            border-radius: 10px;
+            transition: width 0.4s cubic-bezier(.4,0,.2,1);
+        }
+
+        /* ── CONTAINER ── */
+        .container {
+            padding: 14px 14px 140px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* ── QUESTION CARD ── */
+        .question-card {
+            background: var(--card);
+            border-radius: var(--radius);
+            padding: 20px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            margin-bottom: 12px;
+            animation: slideIn 0.25s ease;
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .q-number {
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+        .q-text {
+            font-size: 15px;
+            font-weight: 600;
+            line-height: 1.55;
+            color: var(--text);
+        }
+        .q-image {
+            width: 100%;
+            border-radius: 10px;
+            margin-top: 12px;
+            border: 1px solid var(--border);
+        }
+
+        /* ── OPTIONS ── */
+        .options-grid { display: flex; flex-direction: column; gap: 9px; margin-top: 14px; }
+        .option {
+            background: white;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 13px 16px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.18s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+        .option:active { transform: scale(0.98); }
+        .option-letter {
+            min-width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            background: var(--bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 800;
+            color: var(--muted);
+            flex-shrink: 0;
+            transition: all 0.18s;
+        }
+        .option.selected {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+        .option.selected .option-letter {
+            background: var(--primary);
+            color: white;
+        }
+        .option.correct-result {
+            border-color: var(--success);
+            background: var(--success-light);
+            color: var(--success);
+        }
+        .option.correct-result .option-letter {
+            background: var(--success);
+            color: white;
+        }
+        .option.wrong-result {
+            border-color: var(--error);
+            background: var(--error-light);
+            color: var(--error);
+        }
+        .option.wrong-result .option-letter {
+            background: var(--error);
+            color: white;
+        }
+        .option.neutral-result {
+            opacity: 0.55;
+            cursor: default;
+        }
+
+        /* ── AI BLOCK ── */
+        .ai-btn {
+            background: var(--ai);
+            color: white;
+            border: none;
+            padding: 12px 16px;
+            border-radius: 12px;
+            margin-top: 14px;
+            width: 100%;
+            font-weight: 700;
+            font-size: 14px;
+            font-family: 'Nunito', sans-serif;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            transition: opacity 0.2s;
+        }
+        .ai-btn:active { opacity: 0.85; }
+        .ai-response {
+            margin-top: 10px;
+            padding: 14px;
+            background: var(--ai-light);
+            border-left: 4px solid var(--ai);
+            border-radius: 0 12px 12px 0;
+            font-size: 13.5px;
+            line-height: 1.6;
+            display: none;
+            animation: slideIn 0.2s ease;
+        }
+
+        /* ── NAV BUTTONS ── */
+        .nav-bar {
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            background: white;
+            border-top: 1px solid var(--border);
+            padding: 10px 16px 20px;
+            display: flex;
+            gap: 10px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        /* Center nav-bar on wide screens */
+        @media (min-width: 600px) {
+            .nav-bar { left: 50%; right: auto; transform: translateX(-50%); width: 600px; }
+        }
+        .btn-nav {
+            flex: 1;
+            padding: 13px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 800;
+            font-size: 14px;
+            font-family: 'Nunito', sans-serif;
+            cursor: pointer;
+            transition: all 0.18s;
+        }
+        .btn-prev {
+            background: var(--bg);
+            color: var(--muted);
+            border: 2px solid var(--border);
+        }
+        .btn-next {
+            background: var(--primary);
+            color: white;
+            flex: 2;
+            box-shadow: 0 4px 16px rgba(59,108,248,0.3);
+        }
+        .btn-finish {
+            background: var(--success);
+            color: white;
+            flex: 2;
+            box-shadow: 0 4px 16px rgba(22,163,74,0.3);
+        }
+        .btn-nav:active { transform: scale(0.97); }
+
+        /* ── RESULT OVERLAY ── */
+        #resultOverlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: white;
+            z-index: 1000;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 30px 24px;
+            text-align: center;
+        }
+        .res-icon { font-size: 72px; margin-bottom: 8px; animation: pop 0.4s cubic-bezier(.34,1.56,.64,1); }
+        @keyframes pop { from { transform: scale(0.4); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .res-percent {
+            font-size: 52px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #3b6cf8, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 8px 0;
+        }
+        .res-score {
+            font-size: 18px;
+            color: var(--muted);
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+        .res-msg {
+            font-size: 15px;
+            color: var(--text);
+            font-style: italic;
+            margin-bottom: 28px;
+            padding: 0 10px;
+        }
+        .res-bar-wrap {
+            width: 100%;
+            max-width: 320px;
+            background: #f1f5f9;
+            border-radius: 20px;
+            height: 10px;
+            margin: 0 auto 28px;
+            overflow: hidden;
+        }
+        .res-bar {
+            height: 100%;
+            border-radius: 20px;
+            transition: width 1.2s cubic-bezier(.4,0,.2,1);
+        }
+        .btn-save {
+            background: linear-gradient(135deg, #3b6cf8, #7c3aed);
+            color: white;
+            border: none;
+            padding: 16px 24px;
+            width: 100%;
+            max-width: 320px;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 800;
+            font-family: 'Nunito', sans-serif;
+            cursor: pointer;
+            box-shadow: 0 6px 24px rgba(59,108,248,0.35);
+        }
+        .btn-save:active { transform: scale(0.97); }
+
+        /* ── LOADING ── */
+        #loadingScreen {
+            position: fixed; inset: 0;
+            background: var(--bg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            z-index: 999;
+        }
+        .loader {
+            width: 44px; height: 44px;
+            border: 4px solid var(--primary-light);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .load-text { font-weight: 700; color: var(--muted); font-size: 14px; }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <div id="userName">Test</div>
-        <div id="timer" style="font-weight: bold;">00:00</div>
+<!-- LOADING -->
+<div id="loadingScreen">
+    <div class="loader"></div>
+    <div class="load-text">Testlar yuklanmoqda...</div>
+</div>
+
+<!-- HEADER -->
+<div class="header" id="mainHeader" style="display:none;">
+    <div class="header-left">
+        <div class="subject-badge" id="subjectLabel">Test</div>
+        <div class="q-counter" id="qCounter">1/1</div>
     </div>
+    <div id="timerBox">⏱ <span id="timerText">00:00</span></div>
+</div>
 
-    <div class="container" id="quizUI">
-        <div class="question-card">
-            <div id="qText">Yuklanmoqda...</div>
-            <div id="qMedia"></div>
-            <div id="options"></div>
-        </div>
+<!-- PROGRESS -->
+<div class="progress-wrap" id="progressWrap" style="display:none;">
+    <div class="progress-bar-bg">
+        <div class="progress-bar-fill" id="progressFill" style="width:0%"></div>
     </div>
+</div>
 
-    <div id="resultOverlay">
-        <h1 id="resIcon">🏆</h1>
-        <h2 id="resPercent">0%</h2>
-        <p id="resScore"></p>
-        <p id="resMotivation" style="font-style: italic; color: #555;"></p>
-        <button onclick="sendToBot()" style="background:var(--success); color:white; border:none; padding:15px; width:100%; border-radius:10px; font-weight:bold;">Natijani saqlash</button>
+<!-- MAIN QUIZ -->
+<div class="container" id="quizUI" style="display:none;">
+    <div class="question-card" id="questionCard">
+        <div class="q-number" id="qNumber">SAVOL 1</div>
+        <div class="q-text" id="qText">Yuklanmoqda...</div>
+        <img id="qImage" class="q-image" style="display:none;" alt="">
+        <div class="options-grid" id="options"></div>
+        <button class="ai-btn" id="aiBtn" style="display:none;" onclick="askAI()">
+            🤖 Ustoz AI dan tushuntirish so'rash
+        </button>
+        <div class="ai-response" id="aiResponse"></div>
     </div>
+</div>
 
-    <script>
-        let tg = window.Telegram.WebApp;
-        tg.expand();
-        let currentIdx = 0, questions = [], answers = {}, isDone = false;
-        const fileName = new URLSearchParams(window.location.search).get('test');
+<!-- NAV BAR -->
+<div class="nav-bar" id="navBar" style="display:none;">
+    <button class="btn-nav btn-prev" id="btnPrev" onclick="goTo(currentIdx - 1)">← Oldingi</button>
+    <button class="btn-nav btn-next" id="btnNext" onclick="nextOrFinish()">Keyingi →</button>
+</div>
 
-        // Test yuklash
-        fetch(`https://raw.githubusercontent.com/toychijunaydullayev-del/WepApp/main/${fileName}`)
-            .then(r => r.json())
-            .then(data => { questions = data; updateUI(); });
+<!-- RESULT OVERLAY -->
+<div id="resultOverlay">
+    <div class="res-icon" id="resIcon">🏆</div>
+    <div class="res-percent" id="resPercent">0%</div>
+    <div class="res-score" id="resScore">0 / 0</div>
+    <div class="res-bar-wrap"><div class="res-bar" id="resBar" style="width:0%; background: linear-gradient(90deg,#3b6cf8,#7c3aed);"></div></div>
+    <div class="res-msg" id="resMsg"></div>
+    <button class="btn-save" onclick="sendToBot()">✅ Natijani saqlash va chiqish</button>
+</div>
 
-        function updateUI() {
-            const q = questions[currentIdx];
-            document.getElementById('qText').innerHTML = `<b>${currentIdx+1}.</b> ${q.q}`;
-            const optDiv = document.getElementById('options');
-            optDiv.innerHTML = '';
-            
-            const correctAns = (q.correct || "").toString().toLowerCase().trim();
-            const mode = fileName.startsWith("paid") ? "paid" : "free";
+<script>
+// ─── TELEGRAM ───────────────────────────────────────────────
+const tg = window.Telegram.WebApp;
+tg.expand();
+tg.enableClosingConfirmation();
 
-            (q.options || []).forEach(val => {
-                const item = document.createElement('div');
-                item.className = "option " + (answers[currentIdx] === val ? "selected" : "");
-                if(isDone) {
-                    if(val.toLowerCase() === correctAns) item.className = "option correct-result";
-                    else if(answers[currentIdx] === val) item.className = "option wrong-result";
-                }
-                item.innerText = val;
-                item.onclick = () => { if(!isDone) { answers[currentIdx] = val; updateUI(); } };
-                optDiv.appendChild(item);
-            });
+// ─── STATE ──────────────────────────────────────────────────
+let questions = [];
+let answers   = {};      // { idx: selectedValue }
+let currentIdx = 0;
+let isDone     = false;
+let timerSec   = 0;
+let timerInt   = null;
+let finalScore = 0;
 
-            // AI tugmasi
-            if(isDone && answers[currentIdx]?.toLowerCase() !== correctAns) {
-                const aiBtn = document.createElement('button');
-                aiBtn.className = "ai-btn";
-                aiBtn.innerText = "🤖 Ustoz AI dan tahlil so'rash";
-                aiBtn.onclick = () => {
-                    if(mode === 'free') tg.showAlert("AI tahlili faqat pullik testlarda!");
-                    else getAiAnalysis(q.q, answers[currentIdx], correctAns);
-                };
-                optDiv.appendChild(aiBtn);
-                
-                const aiRes = document.createElement('div');
-                aiRes.id = "aiResponseArea";
-                aiRes.className = "ai-response-area";
-                optDiv.appendChild(aiRes);
-            }
+// Fayl nomidan subject olish: "free_A_kimyo_1234.json" → "kimyo"
+const params   = new URLSearchParams(window.location.search);
+const fileName = params.get('test') || '';
+const mode     = fileName.toLowerCase().startsWith('paid') ? 'paid' : 'free';
+
+// Subject: fayl nomining 3-qismi (0=mode, 1=tur, 2=fan, 3=timestamp)
+function getSubjectFromFileName(fn) {
+    if (!fn) return 'Test';
+    const parts = fn.replace('.json','').split('_');
+    // free_A_kimyo_123 => parts[2] = kimyo
+    // free_IX_aniq_7-sinf_123 => parts[2]+'_'+parts[3] = aniq_7-sinf
+    if (parts.length >= 4) {
+        // Agar 4-element raqam bo'lsa (timestamp), o'rtadagilarini olish
+        const last = parts[parts.length - 1];
+        const isTimestamp = /^\d{8,}$/.test(last);
+        if (isTimestamp) {
+            return parts.slice(2, parts.length - 1).join(' ').replace(/_/g,' ');
+        }
+    }
+    return parts.slice(2).join(' ').replace(/_/g,' ');
+}
+
+const subjectName = getSubjectFromFileName(fileName);
+
+// ─── LOAD ────────────────────────────────────────────────────
+fetch(`https://raw.githubusercontent.com/toychijunaydullayev-del/WepApp/main/${fileName}`)
+    .then(r => {
+        if (!r.ok) throw new Error('Fayl topilmadi');
+        return r.json();
+    })
+    .then(data => {
+        questions = data;
+        document.getElementById('loadingScreen').style.display = 'none';
+        document.getElementById('mainHeader').style.display  = 'flex';
+        document.getElementById('progressWrap').style.display = 'block';
+        document.getElementById('quizUI').style.display      = 'block';
+        document.getElementById('navBar').style.display      = 'flex';
+        document.getElementById('subjectLabel').textContent  = subjectName.charAt(0).toUpperCase() + subjectName.slice(1);
+        startTimer();
+        renderQuestion();
+    })
+    .catch(err => {
+        document.getElementById('loadingScreen').innerHTML =
+            `<div style="text-align:center;padding:20px;">
+                <div style="font-size:48px;">⚠️</div>
+                <p style="margin-top:12px;font-weight:700;color:#dc2626;">Test yuklanmadi!</p>
+                <p style="color:#64748b;font-size:13px;margin-top:6px;">${err.message}</p>
+             </div>`;
+    });
+
+// ─── TIMER ───────────────────────────────────────────────────
+function startTimer() {
+    timerInt = setInterval(() => {
+        timerSec++;
+        const m = String(Math.floor(timerSec / 60)).padStart(2,'0');
+        const s = String(timerSec % 60).padStart(2,'0');
+        document.getElementById('timerText').textContent = `${m}:${s}`;
+        // 45 daqiqadan oshsa qizaradi
+        if (timerSec > 2700) {
+            document.getElementById('timerBox').classList.add('warn');
+        }
+    }, 1000);
+}
+
+// ─── RENDER ──────────────────────────────────────────────────
+const LETTERS = ['A','B','C','D','E','F'];
+
+function renderQuestion() {
+    if (!questions.length) return;
+    const q      = questions[currentIdx];
+    const total  = questions.length;
+    const answered = Object.keys(answers).length;
+
+    // Counter & progress
+    document.getElementById('qCounter').textContent = `${currentIdx+1}/${total}`;
+    document.getElementById('qNumber').textContent  = `SAVOL ${currentIdx+1}`;
+    const pct = Math.round(((currentIdx) / total) * 100);
+    document.getElementById('progressFill').style.width = pct + '%';
+
+    // Question text
+    document.getElementById('qText').innerHTML = q.q || '';
+
+    // Image
+    const imgEl = document.getElementById('qImage');
+    if (q.image && q.image.startsWith('http')) {
+        imgEl.src = q.image;
+        imgEl.style.display = 'block';
+    } else {
+        imgEl.style.display = 'none';
+    }
+
+    // Options
+    const optDiv = document.getElementById('options');
+    optDiv.innerHTML = '';
+    const correctAns = (q.correct || '').toString().toLowerCase().trim();
+    const userAns    = answers[currentIdx];
+
+    (q.options || []).forEach((val, i) => {
+        const valStr = (val || '').toString();
+        const valLow = valStr.toLowerCase().trim();
+        const isSelected = userAns === valStr;
+        const isCorrect  = valLow === correctAns;
+
+        const div = document.createElement('div');
+        div.className = 'option';
+
+        if (isDone) {
+            if (isCorrect)             div.classList.add('correct-result');
+            else if (isSelected)       div.classList.add('wrong-result');
+            else                       div.classList.add('neutral-result');
+        } else if (isSelected) {
+            div.classList.add('selected');
         }
 
-        async function getAiAnalysis(q, u, c) {
-            const resArea = document.getElementById('aiResponseArea');
-            resArea.style.display = "block";
-            resArea.innerText = "O'ylamoqda...";
-            
-            const prompt = `Savol: ${q}. O'quvchi javobi: ${u}. To'g'ri javob: ${c}. Nima uchun xato? Qisqa tushuntir.`;
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=AIzaSyBAJgfL8NHxjQRXeA67NmgHsph1x74LVI8`, {
+        const letterSpan = document.createElement('span');
+        letterSpan.className = 'option-letter';
+        letterSpan.textContent = LETTERS[i] || (i+1);
+
+        const textSpan = document.createElement('span');
+        textSpan.textContent = valStr;
+
+        div.appendChild(letterSpan);
+        div.appendChild(textSpan);
+
+        if (!isDone) {
+            div.onclick = () => {
+                answers[currentIdx] = valStr;
+                renderQuestion();
+            };
+        }
+        optDiv.appendChild(div);
+    });
+
+    // AI tugmasi (faqat natija ko'rsatilganda va xato bo'lsa)
+    const aiBtn = document.getElementById('aiBtn');
+    const aiRes = document.getElementById('aiResponse');
+    aiRes.style.display = 'none';
+    aiRes.textContent   = '';
+    aiBtn._q = q.q; aiBtn._u = userAns; aiBtn._c = q.correct;
+
+    if (isDone && userAns && userAns.toLowerCase().trim() !== correctAns) {
+        aiBtn.style.display = 'flex';
+    } else {
+        aiBtn.style.display = 'none';
+    }
+
+    // Nav tugmalari
+    const btnPrev = document.getElementById('btnPrev');
+    const btnNext = document.getElementById('btnNext');
+    btnPrev.style.display = currentIdx === 0 ? 'none' : 'flex';
+
+    if (!isDone) {
+        if (currentIdx === total - 1) {
+            btnNext.textContent = '✅ Testni yakunlash';
+            btnNext.className   = 'btn-nav btn-finish';
+        } else {
+            btnNext.textContent = 'Keyingi →';
+            btnNext.className   = 'btn-nav btn-next';
+        }
+    } else {
+        if (currentIdx < total - 1) {
+            btnNext.textContent = 'Keyingi savol →';
+            btnNext.className   = 'btn-nav btn-next';
+        } else {
+            btnNext.textContent = '📊 Natijani saqlash';
+            btnNext.className   = 'btn-nav btn-finish';
+            btnNext.onclick     = sendToBot;
+        }
+    }
+
+    // Scroll top
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ─── NAVIGATION ──────────────────────────────────────────────
+function goTo(idx) {
+    if (idx < 0 || idx >= questions.length) return;
+    currentIdx = idx;
+    renderQuestion();
+}
+
+function nextOrFinish() {
+    if (isDone) {
+        if (currentIdx < questions.length - 1) goTo(currentIdx + 1);
+        else sendToBot();
+        return;
+    }
+
+    if (currentIdx < questions.length - 1) {
+        goTo(currentIdx + 1);
+    } else {
+        // Javob berilmagan savollar bormi?
+        const unanswered = questions.length - Object.keys(answers).length;
+        if (unanswered > 0) {
+            tg.showConfirm(
+                `⚠️ ${unanswered} ta savolga javob bermaganingiz. Testni shunga qaramasdan yakunlaysizmi?`,
+                (ok) => { if (ok) finalize(); }
+            );
+        } else {
+            finalize();
+        }
+    }
+}
+
+// ─── FINALIZE ────────────────────────────────────────────────
+function finalize() {
+    isDone = true;
+    clearInterval(timerInt);
+
+    finalScore = 0;
+    questions.forEach((q, i) => {
+        const correct = (q.correct || '').toString().toLowerCase().trim();
+        const given   = (answers[i] || '').toString().toLowerCase().trim();
+        if (given === correct) finalScore++;
+    });
+
+    const total = questions.length;
+    const pct   = total > 0 ? Math.round((finalScore / total) * 100) : 0;
+
+    // Icon & motivatsiya
+    let icon, msg;
+    if (pct >= 90)      { icon = '🏆'; msg = 'Ajoyib! Siz zo\'r natija ko\'rsatdingiz! 🚀'; }
+    else if (pct >= 75) { icon = '🌟'; msg = 'Yaxshi! Bilimingiz yuqori darajada! 💪'; }
+    else if (pct >= 50) { icon = '📈'; msg = 'O\'rtacha natija. Biroz ko\'proq mashq kerak! 📚'; }
+    else                { icon = '💡'; msg = 'Xafa bo\'lmang! Har bir urinish sizni o\'stiradi! 🌱'; }
+
+    document.getElementById('resIcon').textContent    = icon;
+    document.getElementById('resPercent').textContent = pct + '%';
+    document.getElementById('resScore').textContent   = `${finalScore} / ${total} to'g'ri`;
+    document.getElementById('resMsg').textContent     = msg;
+    document.getElementById('progressFill').style.width = '100%';
+
+    const overlay = document.getElementById('resultOverlay');
+    overlay.style.display = 'flex';
+    setTimeout(() => {
+        document.getElementById('resBar').style.width = pct + '%';
+    }, 200);
+
+    // Overlay yopilgandan keyin natijalarni ko'rish uchun
+    overlay.onclick = null;
+    document.getElementById('btnNext').onclick = sendToBot;
+}
+
+// ─── AI TAHLIL ───────────────────────────────────────────────
+async function askAI() {
+    if (mode === 'free') {
+        tg.showAlert('🤖 Ustoz AI tahlili faqat pullik testlarda mavjud!');
+        return;
+    }
+    const aiBtn = document.getElementById('aiBtn');
+    const aiRes = document.getElementById('aiResponse');
+    const q = aiBtn._q, u = aiBtn._u, c = aiBtn._c;
+
+    aiBtn.disabled = true;
+    aiBtn.innerHTML = '⏳ Tahlil qilinmoqda...';
+    aiRes.style.display = 'block';
+    aiRes.textContent   = '';
+
+    const prompt = `Siz tajribali o'zbek tili ustozisiz. O'quvchi testda xato qildi.
+Savol: ${q}
+O'quvchi javobi: ${u}
+To'g'ri javob: ${c}
+
+Nima uchun o'quvchi xato qildi va to'g'ri javob nima uchun to'g'ri ekanini o'zbek tilida, qisqa va tushunarli qilib tushuntiring. 3-4 gapdan oshmasin.`;
+
+    try {
+        const resp = await fetch(
+            `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=AIzaSyBAJgfL8NHxjQRXeA67NmgHsph1x74LVI8`,
+            {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
-            });
-            const data = await response.json();
-            resArea.innerHTML = data.candidates[0].content.parts[0].text;
-        }
+            }
+        );
+        const data = await resp.json();
+        const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || 'Javob olinmadi.';
+        aiRes.innerHTML = text.replace(/\n/g, '<br>');
+    } catch(e) {
+        aiRes.textContent = '⚠️ AI dan javob olishda xatolik. Qaytadan urinib ko\'ring.';
+    }
 
-        function finalize() {
-            isDone = true;
-            let score = 0;
-            questions.forEach((q, i) => { if(answers[i]?.toLowerCase() === (q.correct || "").toLowerCase()) score++; });
-            let p = Math.round((score / questions.length) * 100);
-            
-            // Motivatsiya
-            let msg = p > 80 ? "Super! Bilimingiz juda yuqori! 🚀" : p > 50 ? "Yaxshi, lekin yana ozgina harakat kerak! 💪" : "Xafa bo'lmang, keyingi safar albatta uddalaysiz! 📚";
-            
-            document.getElementById('resultOverlay').style.display = 'flex';
-            document.getElementById('resPercent').innerText = p + "%";
-            document.getElementById('resScore').innerText = score + "/" + questions.length;
-            document.getElementById('resMotivation').innerText = msg;
-        }
+    aiBtn.disabled = false;
+    aiBtn.innerHTML = '🤖 Ustoz AI dan tushuntirish so\'rash';
+}
 
-        function sendToBot() { tg.sendData(JSON.stringify({score: 1, total: 1})); tg.close(); }
-    </script>
+// ─── SEND TO BOT ─────────────────────────────────────────────
+function sendToBot() {
+    // wrong_answers — noto'g'ri javob berilgan savollar indekslari
+    const wrong = [];
+    questions.forEach((q, i) => {
+        const correct = (q.correct || '').toString().toLowerCase().trim();
+        const given   = (answers[i] || '').toString().toLowerCase().trim();
+        if (given !== correct) wrong.push(i + 1);
+    });
+
+    const payload = {
+        action:    'test_result',
+        score:     finalScore,
+        total:     questions.length,
+        subject:   subjectName,
+        file_name: fileName,
+        time_sec:  timerSec,
+        wrong_q:   wrong
+    };
+
+    tg.sendData(JSON.stringify(payload));
+    tg.close();
+}
+</script>
 </body>
 </html>
