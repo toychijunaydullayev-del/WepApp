@@ -401,7 +401,23 @@ function getElapsed(){return getTimerDuration()-timerSec;}
 
 function render(){
   if(!questions.length)return;
-  const q=questions[currentIdx],total=questions.length,qType=(q.type||'test').toLowerCase().trim(),uAns=answers[currentIdx];
+  
+  const q = questions[currentIdx];
+  const total = questions.length;
+  const uAns = answers[currentIdx];
+  
+  // AVTOMATIK TUR ANIQLASH (Yangi mantiq)
+  let qType = (q.type || '').toLowerCase().trim();
+  if (!qType) {
+    if (q.options && q.options.length > 0) {
+      qType = 'test'; // Variantlari bor bo'lsa, test
+    } else if (q.correct) {
+      qType = 'key'; // Varianti yo'q, lekin to'g'ri javobi bor bo'lsa, qisqa yozma (key)
+    } else {
+      qType = 'open'; // Hech narsasi yo'q bo'lsa, erkin ochiq savol (open)
+    }
+  }
+
   document.getElementById('qLabel').textContent=`SAVOL ${currentIdx+1} / ${total}`;
 
   const badge=document.getElementById('qTypeBadge');
@@ -413,7 +429,9 @@ function render(){
   document.getElementById('qText').innerHTML=q.q||'';
   const img=document.getElementById('qImg');
   if(q.image&&q.image.startsWith('http')){img.src=q.image;img.style.display='block';}else img.style.display='none';
-  const wrap=document.getElementById('optWrap');wrap.innerHTML='';
+  
+  const wrap=document.getElementById('optWrap');
+  wrap.innerHTML='';
 
   // ── OPEN (baholanmaydigan) ──
   if(qType==='open'){
