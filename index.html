@@ -332,7 +332,10 @@ body::after{content:'';position:fixed;top:0;left:0;right:0;height:300px;z-index:
 const tg=window.Telegram?.WebApp||{expand:()=>{},enableClosingConfirmation:()=>{},initDataUnsafe:{},showAlert:m=>alert(m),showConfirm:(m,cb)=>{cb(confirm(m));},sendData:d=>console.log(d),close:()=>{}};
 tg.expand();tg.enableClosingConfirmation();
 
+// ✅ TO'G'RILANDI: gemini-2.0-flash
 const GEMINI_KEY="AIzaSyBAJgfL8NHxjQRXeA67NmgHsph1x74LVI8";
+const GEMINI_MODEL="gemini-2.0-flash";
+
 const REPO_RAW="https://raw.githubusercontent.com/toychijunaydullayev-del/WepApp/main/";
 let questions=[],answers={},currentIdx=0,isDone=false,timerSec=0,timerInt=null,finalScore=0;
 let ratingPeriod='week',aiUsedFree=0,aiCtxData=null,aiConv=[];
@@ -414,18 +417,54 @@ function render(){
     d.appendChild(ta);d.appendChild(btn);wrap.appendChild(d);
 
   } else if(qType==='key'){
+    // ✅ TO'G'RILANDI: kalit savol har doim to'g'ri ishlaydi
     const kw=document.createElement('div');kw.className='key-wrap';
     const hint=document.createElement('div');hint.className='key-hint';hint.innerHTML='✏️ <span>Bu yopiq savol — javobingizni quyida yozing va tekshiring.</span>';
     kw.appendChild(hint);
     const row=document.createElement('div');row.className='key-input-row';
-    const inp=document.createElement('input');inp.type='text';inp.className='key-inp';inp.placeholder='Javobni kiriting...';inp.value=uAns!==undefined?uAns:'';
-    if(isDone)inp.disabled=true;
+    const inp=document.createElement('input');inp.type='text';inp.className='key-inp';inp.placeholder='Javobni kiriting...';
+
+    // Saqlangan javobni ko'rsatish
+    if(uAns!==undefined&&uAns!==''){
+      inp.value=uAns;
+      inp.disabled=true;
+    }
+
     const saveBtn=document.createElement('button');saveBtn.className='key-save-btn';
-    if(isDone){saveBtn.textContent='✅ OK';saveBtn.disabled=true;}else saveBtn.textContent='💾 Saqlash';
-    saveBtn.onclick=()=>{const v=inp.value.trim();if(!v){tg.showAlert('⚠️ Javob bo\'sh!');return;}answers[currentIdx]=v;saveBtn.textContent='✅ OK';saveBtn.disabled=true;inp.disabled=true;updateQnums();if(!isDone)showKeyResult(kw,v,q.correct);};
+
+    if(isDone||( uAns!==undefined&&uAns!=='')){
+      // Allaqachon saqlangan yoki test tugagan
+      saveBtn.textContent='✅ OK';
+      saveBtn.disabled=true;
+      inp.disabled=true;
+      inp.value=uAns||'';
+    } else {
+      // Hali saqlanmagan
+      saveBtn.textContent='💾 Saqlash';
+      saveBtn.disabled=false;
+      inp.disabled=false;
+    }
+
+    saveBtn.onclick=()=>{
+      const v=inp.value.trim();
+      if(!v){tg.showAlert('⚠️ Javob bo\'sh!');return;}
+      answers[currentIdx]=v;
+      saveBtn.textContent='✅ OK';
+      saveBtn.disabled=true;
+      inp.disabled=true;
+      updateQnums();
+      // Natijani ko'rsatish (isDone bo'lmasa ham)
+      showKeyResult(kw,v,q.correct);
+    };
+
     inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();saveBtn.click();}});
     row.appendChild(inp);row.appendChild(saveBtn);kw.appendChild(row);
-    if(isDone&&uAns!==undefined)showKeyResult(kw,uAns,q.correct);
+
+    // Agar javob allaqachon berilgan bo'lsa — natijani ko'rsatish
+    if(uAns!==undefined&&uAns!==''){
+      showKeyResult(kw,uAns,q.correct);
+    }
+
     wrap.appendChild(kw);
 
   } else {
@@ -544,7 +583,7 @@ function renderRating(p){
   });
 }
 
-/* ─── USTOZ AI — Gemini 1.5 Flash ─── */
+/* ─── USTOZ AI — Gemini 2.0 Flash ─── */
 function openAI(question,userAns,correctAns){
   aiCtxData={question,userAns,correctAns};aiConv=[];
   document.getElementById('aiMsgs').innerHTML='';
@@ -567,9 +606,8 @@ async function sendAI(){
   addUsr(msg);addTyping();
 
   const ctx=aiCtxData||{};
-
-  /* Birinchi xabarda tizim kontekstini qo'shamiz */
   const isFirst=aiConv.length===0;
+
   const firstMsg=`Sen tajribali o'zbek tili o'qituvchisisisan. Foydalanuvchi ismi: ${userName}.
 
 Savol: ${ctx.question||''}
@@ -584,7 +622,7 @@ Qoidalar:
 
 Foydalanuvchi savoli: ${msg}`;
 
-  /* Gemini uchun contents massivi */
+  // ✅ Gemini API uchun contents massivi
   const contents=[];
   if(isFirst){
     contents.push({role:'user',parts:[{text:firstMsg}]});
@@ -594,17 +632,20 @@ Foydalanuvchi savoli: ${msg}`;
   }
 
   try{
+    // ✅ TO'G'RILANDI: gemini-2.0-flash modeli ishlatildi
     const resp=await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_KEY}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_KEY}`,
       {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents,generationConfig:{temperature:0.7,maxOutputTokens:512}})}
     );
-    if(!resp.ok){const e=await resp.json().catch(()=>({}));throw new Error(e?.error?.message||`Server xato: ${resp.status}`);}
+    if(!resp.ok){
+      const e=await resp.json().catch(()=>({}));
+      throw new Error(e?.error?.message||`Server xato: ${resp.status}`);
+    }
     const data=await resp.json();
     const text=data?.candidates?.[0]?.content?.parts?.[0]?.text;
     if(!text)throw new Error('AI bo\'sh javob qaytardi');
     rmTyping();
     addBbl(text.replace(/\*\*(.*?)\*\*/g,'<b>$1</b>').replace(/\n/g,'<br>'));
-    /* Tarixni saqlash */
     if(isFirst){aiConv.push({role:'user',text:firstMsg});}
     else{aiConv.push({role:'user',text:msg});}
     aiConv.push({role:'ai',text});
