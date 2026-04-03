@@ -1,0 +1,58 @@
+[
+  {
+    "q": "Ta’lim samaradorligini oshirish uchun o‘qituvchi darsda ko‘rgazmali qurollardan foydalanishni rejalashtirdi. Qo‘l ostida ko‘rgazmali va tarqatma materiallar juda ko‘p edi.\nO‘qituvchi tomonidan to‘g‘ri tanlangan tarqatma materiallar qatorini belgilang.",
+    "options": [
+      "A) Turli yo‘nalishlardagi grafik va animatsion taqdimotlar",
+      "B) Dars mavzusiga mos keladigan namoyish va tarqatma materiallar",
+      "C) O‘quvchilarning faqat qiziqishlariga mos keladigan tarqatma materiallar",
+      "D) Turli mavzularni qamrab oluvchi tarqatma materiallar"
+    ],
+    "correct": "B) Dars mavzusiga mos keladigan namoyish va tarqatma materiallar",
+    "type": "test"
+  },
+  {
+    "q": "Quyida qayd etilgan tamoyillar o'qituvchining \"O'quv jarayonini rejalashtrish\" mehnat vazifalarining qaysi mehnat harakatlariga tegishli? \n\n-fanlar mazmuni va soatlari davlat talablariga muvofiq bo'lishi \n-fanlar mazmuni, metodika va baholash tizimi o'quv dasturlariga mos kelishi \n-nazariy va amaliy bilimlarni uyg'unlashtirish, kasbiy kompetensiyalarni shakllantirish",
+    "options": [
+      "A) Oʻquvchilarning ehtiyojlari va qiziqishlaridan kelib chiqib oʻquv dasturini moslashtirish",
+      "B) Oʻz faoliyatini fanlararo kompetensiyalar predmetining korrelyatsiya va integratsiya tamoyillarini inobatga olgan holda rejalashtirish.",
+      "C) Oʻquvchilar bilimini baholash natijasida olingan maʼlumotlarni inobatga inobatga olgan holda, darsning aniq va oʻlchamli maqsad va natijalarini aniqlab, dars rejasini ishlab chiqish",
+      "D) Davlat ta'lim standartlari va o'quv dasturlarining maqsadlariga muvofiq o'quv rejalarini ishlab chiqish"
+    ],
+    "correct": "D) Davlat ta'lim standartlari va o'quv dasturlarining maqsadlariga muvofiq o'quv rejalarini ishlab chiqish",
+    "type": "test"
+  },
+  {
+    "q": "Pedagog bir o'quvchisining ta'lim olish va xulq-atvoridagi muammolarini aniqlash va yordam berish maqsadida juda ko'p izlanishlar olib bordi. Dars metodlarini moslashtirish, individual yondashuv ishlab chiqish uchun o'z hamkasblari va metodbirlashma a'zolari bilan fikr almashdi. Barcha tavsiyalarni inobatga olib, bu o'quvchi bilan ishlash strategiyasini qayta ko'rib chiqdi. \nBunda pedagog o'zlashtirishni baholash va qayta aloqa taqdim etishning qaysi mehnat harakatlarini amalga oshirgan hisoblanadi?",
+    "options": [
+      "A) Oʻquvchilar taʼlim jarayonida toʻqnashgan qiyinchiliklarini kuzatish va qayd etish",
+      "B) Ushbu sinf(guruh)da dars beradigan hamkasblari bilan muayyan oʻquvchining taʼlim olishdagi qiyinchiliklari toʻgʻrisida maslahatlashish",
+      "C) Muayyan oʻquvchining taʼlim olishdagi qiyinchiliklari toʻgʻrisida tegishli soha mutaxassislari bilan maslahatlashish",
+      "D) Oʻquvchining individual taʼlim trayektoriyasini loyihalashtirish va toʻgʻrilash uchun oʻqituvchilar va boshqa mutaxassislar bilan oʻzaro aloqada boʻlib, taʼlim natijalarining barcha turlariga erishish vazifalariga muvofiq ravishda hamkorlik qilish"
+    ],
+    "correct": "B) Ushbu sinf(guruh)da dars beradigan hamkasblari bilan muayyan oʻquvchining taʼlim olishdagi qiyinchiliklari toʻgʻrisida maslahatlashish",
+    "type": "test"
+  },
+  {
+    "q": "Ingliz tili o‘qituvchisi pandemiya davridan keyin ham raqamli texnologiyalarning dars jarayonidagi ahamiyatini unutmadi. Har bir yangi mavzuni boshlashda u internetdagi interaktiv platformalardan foydalanadi: grammatik mashqlarni \"Wordwall\"da, tinglab tushunishni esa \"YouTube\"dagi original videoroliklar orqali mustahkamlaydi. Uy vazifalari esa Google Forms orqali baholanadi. Bu nafaqat o‘quvchilarning motivatsiyasini oshirdi, balki mustaqil ishlash ko‘nikmasini ham shakllantirdi. Bunday holatda o'qituvchi kasbiy kompetentlikning qaysi mehnat vazifasini bajargan hisoblanadi?",
+    "options": [
+      "A) Dars maqsadlari asosida oʻquvchilar uchun erishimli vazifalarni belgilash",
+      "B) Dars mavzusiga mos keladigan namoyish va tarqatma materiallardan foydalanish",
+      "C) Darsda vaqtdan oqilona foydalanish.",
+      "D) Taʼlim jarayonini qoʻllab-quvvatlash va taʼlimiy muammolarni hal qilishda AKTdan foydalanish."
+    ],
+    "correct": "D) Taʼlim jarayonini qoʻllab-quvvatlash va taʼlimiy muammolarni hal qilishda AKTdan foydalanish.",
+    "type": "test"
+  },
+  {
+    "q": "Rasmga qarang",
+    "options": [
+      "dcadc",
+      "caascas",
+      "casc",
+      "sac"
+    ],
+    "correct": "dcadc",
+    "type": "test",
+    "image": "https://t.me/AttestatsiyaNasiba/66727"
+  }
+]
